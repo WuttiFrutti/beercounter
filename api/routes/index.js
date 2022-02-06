@@ -5,8 +5,9 @@ routes.use('/', auth);
 
 const User = require("../database/models/User");
 const List = require("../database/models/List");
+const Drink = require("../database/models/Drink")
 const { sendJoinRequest } = require('../email/mail');
-const { EndedList, Drink } = List;
+const { EndedList } = List;
 
 
 routes.use(async (req, res, next) => {
@@ -78,8 +79,8 @@ routes.post("/list/user", async (req, res) => {
 routes.post("/list/drink", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, "users.user": res.locals.user._id });
 
-  const drink = new Drink({ amount: req.body.amount });
-  list.users.find(user => user.user.toString() === res.locals.user._id.toString()).drinks.push(drink);
+  const drink = await new Drink({ amount: req.body.amount, user:res.locals.user._id, list:list._id }).save();
+  list.users.find(user => user.user.toString() === res.locals.user._id.toString()).drinks.push(drink._id);
   list.save();
 
   res.json(drink);
