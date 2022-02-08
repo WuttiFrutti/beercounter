@@ -15,7 +15,7 @@
 export function register(config) {
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+            const swUrl = `${process.env.PUBLIC_URL || ""}/service-worker.js`;
             registerValidSW(swUrl, config);
         });
     }
