@@ -19,6 +19,11 @@
       "purpose": "any maskable"
     }
   ],
+  "url_handlers": [
+    {
+      "origin": "https://beerchef.wuttifrutti.nl"
+    }
+  ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
