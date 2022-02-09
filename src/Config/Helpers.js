@@ -1,3 +1,4 @@
+import { MainStore } from "./MainStore";
 
 export class AxiosError extends Error {
     constructor(obj) {
@@ -52,5 +53,4 @@ export const reduceUsersToDrinks = (users) => users.reduce((a, b) => a.concat(..
 
 export const mapDrinksToNumber = (drinks) => drinks.reduce((a, b) => a + b.amount, 0);
 
-
-
+export const fillListUser = (user, users) => ({...user, user:users.find(u => u._id === user.user)});

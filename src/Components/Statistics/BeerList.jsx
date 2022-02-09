@@ -3,14 +3,17 @@ import { Typography, List, Divider, Collapse, ListItemButton, ListItemText, List
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { useState } from 'react';
 import Graph from './Graph';
-import { MainStore } from './../../Config/MainStore';
+import { getDrinks, MainStore } from './../../Config/MainStore';
 import { Box } from '@mui/system';
 import AddDrink from './AddDrink';
+import { fillListUser } from '../../Config/Helpers';
 
 
 const BeerList = ({ list }) => {
     const [opened, setOpened] = useState([]);
-    const userId = MainStore.useState(s => s.user._id);
+    const user = MainStore.useState(s => s.user);
+    const userData = MainStore.useState(s => s.users);
+
 
     const isOpen = (id) => opened.find(open => open === id) !== undefined;
     const toggle = (id) => {
@@ -22,15 +25,15 @@ const BeerList = ({ list }) => {
     }
 
     const users = [...list.users];
-    const [userInList] = users.splice(users.findIndex(u => u.user._id === userId),1);
+    const [userInList] = users.splice(users.findIndex(u => u.user === user._id),1);
 
     return <>
         <List>
             {
-                users.map((user, index) => <BeerListItem key={user._id} user={user} index={index} toggle={toggle} isOpen={isOpen} />)
+                users.map((user, index) => <BeerListItem listId={list._id}  key={user._id} user={fillListUser(user, userData)} index={index} toggle={toggle} isOpen={isOpen} />)
             }
             <Divider sx={{ marginTop: "1em" }} component="li" />
-            <BeerListItem user={userInList} index={users.length} toggle={toggle} isOpen={isOpen} />
+            <BeerListItem listId={list._id} user={fillListUser(userInList, userData)} index={users.length} toggle={toggle} isOpen={isOpen} />
         </List>
         <Box>
             <AddDrink listId={list._id} listname={list.name}/>
@@ -38,8 +41,7 @@ const BeerList = ({ list }) => {
     </>
 }
 
-const BeerListItem = ({ user, toggle, isOpen, index }) => {
-
+const BeerListItem = ({ user, listId, toggle, isOpen, index }) => {
     return <>
         <ListItemButton onClick={() => toggle(index)} alignItems="flex-start">
             <ListItemAvatar>
@@ -56,7 +58,7 @@ const BeerListItem = ({ user, toggle, isOpen, index }) => {
                             variant="body2"
                             color="text.primary"
                         >
-                            {user.drinks.reduce((a, b) => a + b.amount, 0)}
+                            {user.total}
                         </Typography>
                     </>
                 }
@@ -64,10 +66,16 @@ const BeerListItem = ({ user, toggle, isOpen, index }) => {
             {isOpen(index) ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
         <Collapse in={isOpen(index)} timeout="auto" unmountOnExit>
-            <Graph data={user.drinks}></Graph>
+            <BeerListItemGraph listId={listId} userId={user.user._id} />
         </Collapse>
         <Divider variant="inset" component="li" />
     </>
+}
+
+const BeerListItemGraph = ({ listId, userId }) => {
+    const drinks = MainStore.useState(getDrinks(listId, userId));
+
+    return <Graph data={drinks}></Graph>
 }
 
 

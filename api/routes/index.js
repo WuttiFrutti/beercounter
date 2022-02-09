@@ -25,6 +25,7 @@ routes.use(async (req, res, next) => {
 routes.get("/main", async (req, res) => {
   let inLists = await List.find({ $or:[{"users.user": res.locals.user._id}, { owner: res.locals.user._id }] });
   let endedLists = await EndedList.find({ $or:[{"users.user": res.locals.user._id}, { owner: res.locals.user._id }] });
+  const drinks = await Drink.find({ user: res.locals.user._id });
 
   const map = list => (list.owner === res.locals.user._id ? { ...list.toJSON(), shareId: list.shareId } : list)
 
@@ -35,7 +36,13 @@ routes.get("/main", async (req, res) => {
 
   const users = await User.find({ _id: { $in: withUsers } });
   
-  res.json({ lists: inLists, ended: endedLists, users: users });
+  res.json({ lists: inLists, ended: endedLists, users: users, userDrinks: drinks  });
+});
+
+
+routes.get("/list/:listId/user/:userId", async (req, res) => {
+  const drinks = await Drink.find({ list: req.params.listId, user: req.params.userId });
+  res.send(drinks);
 });
 
 

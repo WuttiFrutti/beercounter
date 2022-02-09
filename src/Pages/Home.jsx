@@ -5,26 +5,26 @@ import { MainStore } from './../Config/MainStore';
 import { Stack } from '@mui/material';
 import BeerList from '../Components/Statistics/BeerList';
 import { useHistory } from 'react-router-dom';
-import { getDrinksFromUserId } from './../Config/Helpers';
 
 
 const Home = () => {
-    const { lists, user: { _id: userId } } = MainStore.useState(s => s)
+    const lists = MainStore.useState(s => s.lists);
+    const userDrinks = MainStore.useState(s => s.userDrinks);
+
     const history = useHistory();
 
-
-    return lists.lists === undefined ? null : <>
+    return lists === undefined ? null : <>
         <Container sx={{ marginTop: "2em" }} maxWidth="sm">
             <Card sx={{ marginBottom: "2em" }}>
                 <CardContent>
                     <Typography color="primary" variant="h5">
                         Statistieken
                     </Typography>
-                    <Graph data={lists !== undefined ? getDrinksFromUserId(lists,userId) : null} />
+                    <Graph data={userDrinks} />
                 </CardContent>
             </Card>
 
-            {lists?.lists === undefined ? null : lists.lists.length === 0 ? <Card><CardContent>
+            {lists === undefined ? null : lists.length === 0 ? <Card><CardContent>
                 <Typography color="primary" gutterBottom variant="h5" component="div">
                     Lijsten
                 </Typography>
@@ -35,7 +35,7 @@ const Home = () => {
                     <Button onClick={() => history.push("mijn-lijsten", { animation:"swap-left" })} color="primary" variant='outlined'>Maak zelf een lijst aan</Button>
                 </Stack>
             </CardContent></Card> : <>
-                {lists?.lists.map(list => <Card sx={{marginBottom:"2em"}} key={list._id}><CardContent>
+                {lists?.map(list => <Card sx={{marginBottom:"2em"}} key={list._id}><CardContent>
                     <Typography color="primary" gutterBottom variant="h5" component="div">
                         {list.name}
                     </Typography>

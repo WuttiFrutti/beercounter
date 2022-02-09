@@ -94,6 +94,7 @@ export const retrieveLists = async () => {
             s.lists = data.lists;
             s.ended = data.ended;
             s.users = data.users;
+            s.userDrinks = data.userDrinks;
         });
     }catch(e){
         console.log(e);
@@ -115,7 +116,8 @@ export const joinList = async (shareId) => {
 export const addDrink = async (listId, amount) => {
     try{
         const { data } = await axios.post("list/drink",{ id: listId, amount:amount });
-        retrieveLists();
+        await retrieveDrinksForListUser(listId, MainStore.currentState.user._id);
+        await retrieveLists();
         return data;
     }catch(e){
         defaultHandler();
@@ -124,8 +126,23 @@ export const addDrink = async (listId, amount) => {
 
 export const undoDrink = async (listId, drinkId) => {
     try{
-        const { data } = await axios.delete("list/drink",{ data:{ listId: listId, drinkId:drinkId } });
-        retrieveLists();
+        const { data } = await axios.delete("list/drink",{ data:{ id:drinkId } });
+        await retrieveDrinksForListUser(listId, MainStore.currentState.user._id);
+        await retrieveLists();
+    }catch(e){
+        defaultHandler();
+    }
+}
+
+export const retrieveDrinksForListUser = async (listId, userId) => {
+    try{
+        const { data } = await axios.get(`list/${listId}/user/${userId}`);
+        MainStore.update(s => {
+            if(s.drinks[listId] === undefined) s.drinks[listId] = {};
+            // if(s.drinks[listId][userId] === undefined) s.drinks[listId][userId] = [];
+
+            s.drinks[listId][userId] = data;
+        });
     }catch(e){
         defaultHandler();
     }

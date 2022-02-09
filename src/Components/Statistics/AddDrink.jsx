@@ -7,14 +7,13 @@ import Select from '@mui/material/Select';
 import { IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { addDrink, undoDrink } from './../../Config/Axios';
-import { MainStore } from './../../Config/MainStore';
+import { getDrinks, MainStore } from './../../Config/MainStore';
 import { Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
 
 const AddDrink = ({ listId, listname }) => {
     const [amount, setAmount] = React.useState(1);
     const [sending, setSending] = React.useState(false);
-    const userId = MainStore.useState(s => s.user._id)
 
     const numberSelect = (max = 10) => {
         const arr = [];
@@ -29,7 +28,6 @@ const AddDrink = ({ listId, listname }) => {
     }
 
     const undo = (data) => {
-        console.log(data)
         closeSnack();
         setSending(true);
         undoDrink(listId, data._id).then(() => {
