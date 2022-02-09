@@ -80,6 +80,15 @@ export const checkLogin = async () => {
     }
 }
 
+export const registerToken = async (token) => {
+    try{
+        const { data } = await axios.post("user/messaging", { token });
+        console.log(`Registered: ${token} for messaging`);
+    }catch(e){
+        defaultHandler("Kan notificaties niet tonen!");
+    }
+}
+
 export const logout = () => {
 
     setCookie("token","");

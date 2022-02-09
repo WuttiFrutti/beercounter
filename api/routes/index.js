@@ -8,6 +8,7 @@ const List = require("../database/models/List");
 const Drink = require("../database/models/Drink")
 const { sendJoinRequest } = require('../messaging/mail');
 const { EndedList } = List;
+const messaging = require("../messaging/messaging");
 
 
 routes.use(async (req, res, next) => {
@@ -65,11 +66,19 @@ routes.post("/list", async (req, res) => {
   
   const list = await new List({ name: req.body.name, price: req.body.price, owner: res.locals.user._id, users: req.body.join ? [{ drinks: [], user: res.locals.user._id }] : [] }).save();
 
-  const subscribes = []
-  const promises = [...found.map(u => sendJoinRequest(u, res.locals.user, list)),...subscribes]
-  Promise.all(promises).then(() => {
+  console.log(...found.map(u => u.messagingTokens));
+  const subscribes = messaging.sendToDevice(...found.map(u => u.messagingTokens), {
+    notification: {
+      title: `Je bent uitgenodigd voor een lijst`,
+      body: `${res.locals.user.username} heeft je uitgenodigd voor een drank lijst!`
+    }
+  });
+  const promises = [subscribes]
+  Promise.all(promises).then((e) => {
+    console.log(e.map(e => e.results));
     res.json(list);
-  }).catch(() => {
+  }).catch((e) => {
+    console.log(e);
     res.status(401).json(list)
   });
 

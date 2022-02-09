@@ -16,13 +16,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
-export const notificationPermissions = async (registration) => {
+export const notificationPermissions = async () => {
     console.log("now asking for notifications");
     try {
         const messaging = getMessaging(app);
         await Notification.requestPermission();
         const token = await getToken(messaging);
-        console.log('Your token is:', token);
+        console.log('Your token is:', token, messaging.swRegistration);
+        messaging.swRegistration.active.onstatechange = () => {
+            console.log("Yeet")
+        }
+
 
         return token;
     } catch (error) {
