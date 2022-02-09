@@ -8,7 +8,8 @@ const UserSchema = new Schema({
     email: { type: String, required: true, unique: true },
     hash: { type: String, hide: true },
     salt: { type: String, hide: true },
-    token: { type: String, hide: true }
+    token: { type: String, hide: true },
+    total: { type: Number, default:0 }
 })
 
 UserSchema.virtual("password")

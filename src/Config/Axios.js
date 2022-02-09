@@ -89,9 +89,11 @@ export const logout = () => {
 
 export const retrieveLists = async () => {
     try{
-        const { data } = await axios.get("lists");
+        const { data } = await axios.get("main");
         MainStore.update(s => {
-            s.lists = data;
+            s.lists = data.lists;
+            s.ended = data.ended;
+            s.users = data.users;
         });
     }catch(e){
         console.log(e);

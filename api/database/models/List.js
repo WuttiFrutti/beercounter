@@ -10,8 +10,9 @@ const ListSchema = new Schema({
     name: { type: String, required: true },
     price: { type: Number, required: true },
     owner: { type: Schema.Types.ObjectId, ref: 'User' },
-    users: [{ user:{ type: Schema.Types.ObjectId, ref: 'User' }, drinks:[{ type: Schema.Types.ObjectId, ref: 'Drink' }] }],
-    shareId: { type: String, default: uuid, hide: true}
+    users: [{ user:{ type: Schema.Types.ObjectId, ref: 'User' }, drinks:[{ type: Schema.Types.ObjectId, ref: 'Drink' }], total: { type: Number, default:0 } }],
+    shareId: { type: String, default: uuid, hide: true},
+    total: { type: Number, default:0 }
 });
 
 
