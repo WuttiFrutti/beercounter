@@ -22,14 +22,23 @@ routes.use(async (req, res, next) => {
   res.status(401).send();
 })
 
-routes.get("/lists", async (req, res) => {
-  const inLists = await List.find({ "users.user": res.locals.user._id }).populate("users.user");
-  const endedLists = await EndedList.find({ "users.user": res.locals.user._id }).populate("users.user");
+routes.get("/main", async (req, res) => {
+  let inLists = await List.find({ $or:[{"users.user": res.locals.user._id}, { owner: res.locals.user._id }] });
+  let endedLists = await EndedList.find({ $or:[{"users.user": res.locals.user._id}, { owner: res.locals.user._id }] });
 
-  const ownedLists = (await List.find({ owner: res.locals.user._id })).map(list => ({ ...list.toJSON(), shareId: list.shareId }));
-  const owned = [...ownedLists, ...(await EndedList.find({ owner: res.locals.user._id })).map(list => ({ ...list.toJSON(), ended: true }))];
-  res.json({ lists: inLists, owned: owned, ended: endedLists });
+  const map = list => (list.owner === res.locals.user._id ? { ...list.toJSON(), shareId: list.shareId } : list)
+
+  inLists = inLists.map(map);
+  endedLists = endedLists.map(map);
+
+  const withUsers = [...(new Set([...endedLists, ...inLists].map(list => list.users.map(users => users.user.toString())).flat()))];
+
+  const users = await User.find({ _id: { $in: withUsers } });
+  
+  res.json({ lists: inLists, ended: endedLists, users: users });
 });
+
+
 
 routes.post("/list", async (req, res) => {
   const userEmails = req.body.users.filter(e => e !== res.locals.user.email && e !== "");
@@ -80,23 +89,34 @@ routes.post("/list/drink", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, "users.user": res.locals.user._id });
 
   const drink = await new Drink({ amount: req.body.amount, user:res.locals.user._id, list:list._id }).save();
-  list.users.find(user => user.user.toString() === res.locals.user._id.toString()).drinks.push(drink._id);
+  const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
+  user.drinks.push(drink._id);
+  user.total += drink.amount;
+  list.total += drink.amount;
+  res.locals.user.total += drink.amount;
+
+  res.locals.user.save();
   list.save();
 
   res.json(drink);
 })
 
 routes.delete("/list/drink", async (req, res) => {
-  const list = await List.findOne({ _id: req.body.listId, "users.user": res.locals.user._id },);
+  const drink = await Drink.findOne({ _id: req.body.id, user:res.locals.user._id });
+  const list = await List.findOne({ _id: drink.list });
 
-  let drinks = list.users.find(u => u.user.toString() === res.locals.user._id.toString()).drinks;
-  list.users.find(u => u.user.toString() === res.locals.user._id.toString()).drinks = drinks.filter(d => d._id.toString() !== req.body.drinkId);
+  const user = list.users.find(u => u.user.toString() === res.locals.user._id.toString());
+  const index = user.drinks.findIndex(d => d._id.toString() === req.body.drinkId);
+  user.drinks.splice(index, 1);
 
-  list.save();
+  user.total -= drink.amount;
+  list.total -= drink.amount;
+  res.locals.user.total -= drink.amount;
 
-  if (list.modifiedCount === 0) {
-    res.status(404).send();
-  }
+  await list.save();
+  await drink.remove();
+  await res.locals.user.save();
+
 
   res.status(200).send();
 })
