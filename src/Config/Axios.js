@@ -2,6 +2,7 @@ import _axios from "axios";
 import { MainStore, defaultState } from './MainStore';
 import { AxiosError } from './Helpers';
 import { setCookie, getCookie } from 'react-use-cookie';
+import { notificationPermissions } from "./ServiceWorker";
 
 const axios = _axios.create({ baseURL:process.env.REACT_APP_BASE_URL, withCredentials: true })
 
@@ -72,10 +73,10 @@ export const checkLogin = async () => {
             s.user = data;
         });
         await retrieveLists();
-        return true
+        return true;
     }catch(e){
         setCookie("token","");
-        return false
+        return false;
     }
 }
 

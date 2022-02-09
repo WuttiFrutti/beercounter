@@ -6,7 +6,7 @@ routes.use('/', auth);
 const User = require("../database/models/User");
 const List = require("../database/models/List");
 const Drink = require("../database/models/Drink")
-const { sendJoinRequest } = require('../email/mail');
+const { sendJoinRequest } = require('../messaging/mail');
 const { EndedList } = List;
 
 
@@ -45,6 +45,11 @@ routes.get("/list/:listId/user/:userId", async (req, res) => {
   res.send(drinks);
 });
 
+routes.post("/user/messaging", async (req, res) => {
+  res.locals.user.messagingTokens.push(req.body.token);
+  await res.locals.user.save();
+  res.send();
+});
 
 
 routes.post("/list", async (req, res) => {
@@ -60,7 +65,8 @@ routes.post("/list", async (req, res) => {
   
   const list = await new List({ name: req.body.name, price: req.body.price, owner: res.locals.user._id, users: req.body.join ? [{ drinks: [], user: res.locals.user._id }] : [] }).save();
 
-  const promises = found.map(u => sendJoinRequest(u, res.locals.user, list))
+  const subscribes = []
+  const promises = [...found.map(u => sendJoinRequest(u, res.locals.user, list)),...subscribes]
   Promise.all(promises).then(() => {
     res.json(list);
   }).catch(() => {

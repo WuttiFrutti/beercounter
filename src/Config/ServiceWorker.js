@@ -1,11 +1,13 @@
+
+import { notificationPermissions } from './Firebase';
 export function register(config) {
     if ('serviceWorker' in navigator) {
-        if(process.env.NODE_ENV === 'production'){
+        // if (process.env.NODE_ENV === 'production') {
             window.addEventListener('load', () => {
                 const swUrl = `${process.env.PUBLIC_URL || ""}/service-worker.js`;
                 registerValidSW(swUrl, config);
             });
-        }
+        // }
     }
 }
 
@@ -13,6 +15,7 @@ function registerValidSW(swUrl, config) {
     navigator.serviceWorker
         .register(swUrl)
         .then(registration => {
+            notificationPermissions(registration);
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing;
                 if (installingWorker == null) {
@@ -64,3 +67,4 @@ export function unregister() {
             });
     }
 }
+

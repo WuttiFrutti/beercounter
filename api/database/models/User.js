@@ -9,7 +9,8 @@ const UserSchema = new Schema({
     hash: { type: String, hide: true },
     salt: { type: String, hide: true },
     token: { type: String, hide: true },
-    total: { type: Number, default:0 }
+    total: { type: Number, default:0 },
+    messagingTokens: [{ type: String, hide: true }]
 })
 
 UserSchema.virtual("password")
