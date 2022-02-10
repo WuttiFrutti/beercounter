@@ -2,7 +2,7 @@ import _axios from "axios";
 import { MainStore, defaultState } from './MainStore';
 import { AxiosError } from './Helpers';
 import { setCookie, getCookie } from 'react-use-cookie';
-import { notificationPermissions } from "./ServiceWorker";
+import { notificationPermissions } from "./Firebase";
 
 const axios = _axios.create({ baseURL:process.env.REACT_APP_BASE_URL, withCredentials: true })
 
@@ -26,6 +26,7 @@ export const login = async ({email, password}) => {
     try{
         const { data } = await axios.post("login",{email, password});
         MainStore.update(s => ({...defaultState, darkmode: getCookie("darkmode") === 'true', user: data}));
+        await registerMessagingToken(await notificationPermissions());
         await retrieveLists();
     }catch(e){
         if(e?.response?.data) throw new AxiosError(e.response.data);
@@ -72,6 +73,7 @@ export const checkLogin = async () => {
         MainStore.update(s => {
             s.user = data;
         });
+        await registerMessagingToken(await notificationPermissions());
         await retrieveLists();
         return true;
     }catch(e){
@@ -158,9 +160,15 @@ export const retrieveDrinksForListUser = async (listId, userId) => {
     }
 }
 
-export const createList = async (name, price, join, users) => {
-    await timeout(100);
+export const registerMessagingToken = async (token) => {
+    try{
+        const { data } = await axios.post(`/user/messaging`, { token });
+    }catch(e){
+        defaultHandler();
+    }
+}
 
+export const createList = async (name, price, join, users) => {
     const errors = { users: [] };
     if(!name) errors.name = "* Verplicht";
     if(!price) errors.price = "* Verplicht";

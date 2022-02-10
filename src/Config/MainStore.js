@@ -5,11 +5,9 @@ import { retrieveDrinksForListUser } from './Axios';
 export const defaultState = {
     snack: {},
     user: false,
-    lists: {
-        lists:[],
-        owned:[],
-        ended:[]
-    },
+    lists: [],
+    ended:[],
+    users:[],
     drinks:{},
     userDrinks: [],
     darkmode: getCookie("darkmode") === 'true'

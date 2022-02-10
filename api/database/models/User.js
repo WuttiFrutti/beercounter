@@ -9,9 +9,37 @@ const UserSchema = new Schema({
     hash: { type: String, hide: true },
     salt: { type: String, hide: true },
     token: { type: String, hide: true },
-    total: { type: Number, default:0 },
-    messagingTokens: [{ type: String, hide: true }]
-})
+    total: { type: Number, default: 0 },
+    messagingTokens: [{
+        type: new mongoose.Schema(
+            {
+                token: { type:String, required: true },
+            },
+            { timestamps: true }
+        )
+    }]
+});
+
+
+UserSchema.virtual("messageTokens")
+    .get(function () {
+        return this.messagingTokens.reduce((a, b) => {
+            const fourMonthsAgo = new Date();
+            fourMonthsAgo.setMonth(fourMonthsAgo.getMonth() - 4);
+            if (+fourMonthsAgo < +new Date(b.updatedAt)) {
+                a.push(b.token);
+            }
+            return a;
+        }, []);
+    })
+    .set(function (token) {
+        const found = this.messagingTokens.find(t => t.token === token)
+        if (found) {
+            found.updatedAt = Date.now();
+        } else {
+            this.messagingTokens.push({ token });
+        }
+    });
 
 UserSchema.virtual("password")
     .get(() => this.hash)
@@ -21,12 +49,12 @@ UserSchema.virtual("password")
         this.set({ salt: salt, hash: hash });
     })
 
-UserSchema.methods.validatePassword = function(password) {
+UserSchema.methods.validatePassword = function (password) {
     const hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, `sha512`).toString(`hex`);
     return this.hash === hash;
 };
 
-UserSchema.plugin(mongooseHidden, { virtuals: { password: "hide" } });
+UserSchema.plugin(mongooseHidden, { virtuals: { password: "hide", messageTokens: "hide" }, hidden: { messagingTokens: true } });
 
 const UserModel = mongoose.model('User', UserSchema);
 

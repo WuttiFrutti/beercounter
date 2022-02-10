@@ -1,5 +1,4 @@
 
-import { notificationPermissions } from './Firebase';
 export function register(config) {
     if ('serviceWorker' in navigator) {
         // if (process.env.NODE_ENV === 'production') {
@@ -15,7 +14,6 @@ function registerValidSW(swUrl, config) {
     navigator.serviceWorker
         .register(swUrl)
         .then(registration => {
-            notificationPermissions();
             registration.onupdatefound = () => {
                 const installingWorker = registration.installing;
                 if (installingWorker == null) {

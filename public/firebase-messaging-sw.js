@@ -17,16 +17,31 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 
-// Retrieve firebase messaging
 const messaging = firebase.messaging();
+
 
 messaging.onBackgroundMessage(function(payload) {
   console.log("Received background message ", payload);
+  const { data, body, actions } = payload.data;
 
-  const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification.body,
+    body: body,
+    data: JSON.parse(data),
+    actions: JSON.parse(actions)
   };
+  self.registration.showNotification(payload.data.title, notificationOptions);
+});
 
-  self.registration.showNotification(notificationTitle, notificationOptions);
+
+self.addEventListener('notificationclose', function(e) {
+  console.log(e);
+  const notification = e.notification;
+  console.log(e.action);
+  if(e.action === "join"){
+    console.log('opening'+ notification.data.url);
+    clients.openWindow(notification.data.url);
+  }else{
+    console.log('closing'+ notification.data.url);
+    notification.close();
+  }
 });

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getMessaging, getToken } from "firebase/messaging";
+import { registerMessagingToken } from './Axios';
 
 
 const firebaseConfig = {
@@ -17,16 +18,28 @@ const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 
 export const notificationPermissions = async () => {
-    console.log("now asking for notifications");
     try {
         const messaging = getMessaging(app);
         await Notification.requestPermission();
         const token = await getToken(messaging);
-        console.log('Your token is:', token, messaging.swRegistration);
-        messaging.swRegistration.active.onstatechange = () => {
-            console.log("Yeet")
-        }
+        console.log("Token requested:", token);
+        console.log(messaging)
 
+        messaging.onMessageHandler = function(payload) {
+            console.log("Received foreground message ", payload);
+            const { data, body, actions } = payload.data;
+          
+            const notificationOptions = {
+              body: body,
+              data: JSON.parse(data),
+              actions: JSON.parse(actions)
+            };
+          
+            const not = messaging.swRegistration.showNotification(payload.data.title, notificationOptions);
+            not.then((e) => {
+                console.log(e);
+            })
+          };
 
         return token;
     } catch (error) {
