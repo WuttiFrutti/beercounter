@@ -160,6 +160,24 @@ export const retrieveDrinksForListUser = async (listId, userId) => {
     }
 }
 
+export const retrieveDrinksForList = async (listId) => {
+    try{
+        const { data } = await axios.get(`list/${listId}/drinks`);
+        MainStore.update(s => {
+            if(s.drinks[listId] === undefined) s.drinks[listId] = {};
+            // if(s.drinks[listId][userId] === undefined) s.drinks[listId][userId] = [];
+
+            s.drinks[listId] = data.reduce((a, b) => {
+                if(a[b.user] === undefined) a[b.user] = [];
+                a[b.user].push(b);
+                return a;
+            }, {});
+        });
+    }catch(e){
+        defaultHandler();
+    }
+}
+
 export const registerMessagingToken = async (token) => {
     try{
         const { data } = await axios.post(`/user/messaging`, { token });

@@ -32,9 +32,7 @@ messaging.onBackgroundMessage(function(payload) {
   self.registration.showNotification(payload.data.title, notificationOptions);
 });
 
-
-self.addEventListener('notificationclose', function(e) {
-  console.log(e);
+self.addEventListener('notificationclick', function(e) {  
   const notification = e.notification;
   console.log(e.action);
   if(e.action === "join"){
@@ -44,4 +42,4 @@ self.addEventListener('notificationclose', function(e) {
     console.log('closing'+ notification.data.url);
     notification.close();
   }
-});
+}, false);
