@@ -9,6 +9,7 @@
     "cors": "^2.8.5",
     "express": "^5.0.0-alpha.8",
     "express-handlebars": "^6.0.2",
+    "firebase-admin": "^10.0.2",
     "mongoose": "^6.0.13",
     "mongoose-hidden": "^1.9.1",
     "node-input-validator": "^4.5.0",
@@ -19,7 +20,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js",
-    "start-env":"npx env-cmd node server.js"
+    "start-env": "npx env-cmd node server.js"
   },
   "author": "",
   "license": "ISC"

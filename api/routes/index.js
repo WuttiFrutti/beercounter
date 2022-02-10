@@ -6,8 +6,9 @@ routes.use('/', auth);
 const User = require("../database/models/User");
 const List = require("../database/models/List");
 const Drink = require("../database/models/Drink")
-const { sendJoinRequest } = require('../email/mail');
+const { sendJoinRequest } = require('../messaging/mail');
 const { EndedList } = List;
+const messaging = require("../messaging/messaging");
 
 
 routes.use(async (req, res, next) => {
@@ -23,11 +24,11 @@ routes.use(async (req, res, next) => {
 })
 
 routes.get("/main", async (req, res) => {
-  let inLists = await List.find({ $or:[{"users.user": res.locals.user._id}, { owner: res.locals.user._id }] });
-  let endedLists = await EndedList.find({ $or:[{"users.user": res.locals.user._id}, { owner: res.locals.user._id }] });
+  let inLists = await List.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
+  let endedLists = await EndedList.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
   const drinks = await Drink.find({ user: res.locals.user._id });
 
-  const map = list => (list.owner === res.locals.user._id ? { ...list.toJSON(), shareId: list.shareId } : list)
+  const map = list => (list.owner.toString() === res.locals.user._id.toString() ? { ...list.toJSON(), shareId: list.shareId } : list)
 
   inLists = inLists.map(map);
   endedLists = endedLists.map(map);
@@ -35,8 +36,8 @@ routes.get("/main", async (req, res) => {
   const withUsers = [...(new Set([...endedLists, ...inLists].map(list => list.users.map(users => users.user.toString())).flat()))];
 
   const users = await User.find({ _id: { $in: withUsers } });
-  
-  res.json({ lists: inLists, ended: endedLists, users: users, userDrinks: drinks  });
+
+  res.json({ lists: inLists, ended: endedLists, users: users, userDrinks: drinks });
 });
 
 
@@ -45,6 +46,16 @@ routes.get("/list/:listId/user/:userId", async (req, res) => {
   res.send(drinks);
 });
 
+routes.get("/list/:listId/drinks", async (req, res) => {
+  const drinks = await Drink.find({ list: req.params.listId });
+  res.send(drinks);
+});
+
+routes.post("/user/messaging", async (req, res) => {
+  res.locals.user.messageTokens = req.body.token;
+  await res.locals.user.save();
+  res.send();
+});
 
 
 routes.post("/list", async (req, res) => {
@@ -53,17 +64,28 @@ routes.post("/list", async (req, res) => {
   const found = await User.find({ email: { $in: userEmails } });
   const notFound = userEmails.filter(mail => !found.find(f => f.email === mail));
 
-  if(notFound.length > 0) {
-    res.status(404).json({emails:notFound});
+  if (notFound.length > 0) {
+    res.status(404).json({ emails: notFound });
     return;
   }
-  
+
   const list = await new List({ name: req.body.name, price: req.body.price, owner: res.locals.user._id, users: req.body.join ? [{ drinks: [], user: res.locals.user._id }] : [] }).save();
 
-  const promises = found.map(u => sendJoinRequest(u, res.locals.user, list))
-  Promise.all(promises).then(() => {
+  messaging.sendToDevice(found.map(u => u.messageTokens).flat(), {
+    data: {
+      title: `Je bent uitgenodigd voor een lijst`,
+      body: `${res.locals.user.username} heeft je uitgenodigd voor een drank lijst!`,
+      data: JSON.stringify({ url: `${process.env.FRONTEND_URL}/join/${list.shareId}` }),
+      actions: JSON.stringify([
+        { action: 'join', title: 'Mee doen' },
+        { action: 'close', title: 'Sluiten' },
+      ]),
+    }
+  });
+  Promise.all(found.map(f => sendJoinRequest(f, res.locals.user, list))).then((e) => {
     res.json(list);
-  }).catch(() => {
+  }).catch((e) => {
+    console.log(e);
     res.status(401).json(list)
   });
 
@@ -95,7 +117,7 @@ routes.post("/list/user", async (req, res) => {
 routes.post("/list/drink", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, "users.user": res.locals.user._id });
 
-  const drink = await new Drink({ amount: req.body.amount, user:res.locals.user._id, list:list._id }).save();
+  const drink = await new Drink({ amount: req.body.amount, user: res.locals.user._id, list: list._id }).save();
   const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
   user.drinks.push(drink._id);
   user.total += drink.amount;
@@ -109,7 +131,7 @@ routes.post("/list/drink", async (req, res) => {
 })
 
 routes.delete("/list/drink", async (req, res) => {
-  const drink = await Drink.findOne({ _id: req.body.id, user:res.locals.user._id });
+  const drink = await Drink.findOne({ _id: req.body.id, user: res.locals.user._id });
   const list = await List.findOne({ _id: drink.list });
 
   const user = list.users.find(u => u.user.toString() === res.locals.user._id.toString());

@@ -35,12 +35,12 @@ const Home = () => {
                     <Button onClick={() => history.push("mijn-lijsten", { animation:"swap-left" })} color="primary" variant='outlined'>Maak zelf een lijst aan</Button>
                 </Stack>
             </CardContent></Card> : <>
-                {lists?.map(list => <Card sx={{marginBottom:"2em"}} key={list._id}><CardContent>
+                {lists !== undefined ? lists.map(list => <Card sx={{marginBottom:"2em"}} key={list._id}><CardContent>
                     <Typography color="primary" gutterBottom variant="h5" component="div">
                         {list.name}
                     </Typography>
                     <BeerList list={list} />
-                    </CardContent></Card>)}
+                    </CardContent></Card>) : null}
             </>
 
             }
