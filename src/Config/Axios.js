@@ -212,6 +212,14 @@ export const createList = async (name, price, join, users) => {
 
 }
 
+export const notifyList = async (listId) => {
+    try{
+        const { data } = await axios.post(`/list/notify`, { id:listId });
+    }catch(e){
+        defaultHandler();
+    }
+}
+
 const hasDuplicates = (array) =>  (new Set(array)).size !== array.length;
 
 const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));

@@ -5,11 +5,12 @@ import CreateList from '../Components/CreateList';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Share, ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Share, ExpandLess, ExpandMore, NotificationImportant as Notify } from '@mui/icons-material';
 import { reduceUsersToDrinks } from '../Config/Helpers';
 import { mapDrinksToNumber } from './../Config/Helpers';
 import { useState, Fragment } from "react";
 import Graph from './../Components/Statistics/Graph';
+import { notifyList } from "../Config/Axios";
 
 const MyLists = () => {
     const lists  = MainStore.useState(s => s.lists);
@@ -56,6 +57,9 @@ const MyLists = () => {
                             primary={list.name}
                             secondary={`Totaal: ${list.total}`}
                         />
+                        <IconButton onClick={() => notifyList(list.id)} edge="end" sx={{marginRight:"0.1em"}} aria-label="notify">
+                            <Notify />
+                        </IconButton>
                         <IconButton onClick={() => share(list.shareId)} edge="end" sx={{marginRight:"0.1em"}} aria-label="share">
                             <Share />
                         </IconButton>

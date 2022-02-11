@@ -107,7 +107,7 @@ routes.put("/list", async (req, res) => {
 
 routes.post("/list/user", async (req, res) => {
   const list = await List.findOneAndUpdate({ shareId: req.body.shareId, 'users.user': { $ne: res.locals.user._id } }, { $push: { users: { drinks: [], user: res.locals.user._id } } });
-  messaging.subscribeToTopic(res.locals.user.messageTokens, `list/${list._id}`);
+  messaging.subscribeToTopic(res.locals.user.messageTokens, `/topics/list_${list._id}`);
   if (list) {
     res.status(201).send();
   } else {
@@ -115,7 +115,7 @@ routes.post("/list/user", async (req, res) => {
   }
 });
 
-routes.post("list/notify", async (req, res) => {
+routes.post("/list/notify", async (req, res) => {
   const list = await List.findOne({ id: req.body.id, owner: res.locals.user._id });
 
   messaging.send({
@@ -128,7 +128,7 @@ routes.post("list/notify", async (req, res) => {
         { action: 'close', title: 'Sluiten' },
       ]),
     },
-    topic:`list/${list._id}`
+    topic:`/topics/list_${list._id}`
   });
 });
 
