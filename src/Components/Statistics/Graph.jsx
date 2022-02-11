@@ -10,7 +10,7 @@ import moment from "moment"
 const graphStyle = {
     line: { stroke: '#ADDDE1' },
     ticks: { stroke: '#ADDDE1' },
-    text: { stroke: 'none', fill: '#285a84', fontWeight: 600 },
+    text: { stroke: 'none', fill: '#285a84', fontWeight: 600  },
     title: { stroke: 'none', fill: '#285a84', fontWeight: 600, fontSize: "1.2em" }
 }
 
@@ -35,8 +35,8 @@ const Graph = ({ data, height = 200 }) => {
         <Box sx={{ display: "flex", flexDirection: "column" }}>
             <FlexibleWidthXYPlot height={height}>
                 <VerticalBarSeries color="#ef6f53" animation data={mappedData} />
-                <XAxis title="Tijd" style={{ ...graphStyle }} tickFormat={(d, index, f, total, ...s) => {
-                    const date = new Date(mappedData[index].time);
+                <XAxis tickTotal={datapoints} title="Tijd" style={{ ...graphStyle }} tickFormat={(d, i) => {
+                    const date = new Date(mappedData[i].time);
                     return `${date.getDate()}/${date.getMonth() + 1}`
                 }} />
                 <YAxis title="Bier" style={graphStyle} />

@@ -71,17 +71,21 @@ routes.post("/list", async (req, res) => {
 
   const list = await new List({ name: req.body.name, price: req.body.price, owner: res.locals.user._id, users: req.body.join ? [{ drinks: [], user: res.locals.user._id }] : [] }).save();
 
-  messaging.sendToDevice(found.map(u => u.messageTokens).flat(), {
-    data: {
-      title: `Je bent uitgenodigd voor een lijst`,
-      body: `${res.locals.user.username} heeft je uitgenodigd voor een drank lijst!`,
-      data: JSON.stringify({ url: `${process.env.FRONTEND_URL}/join/${list.shareId}` }),
-      actions: JSON.stringify([
-        { action: 'join', title: 'Mee doen' },
-        { action: 'close', title: 'Sluiten' },
-      ]),
-    }
-  });
+  const devices = found.map(u => u.messageTokens).flat();
+  if(devices.length > 0){
+    messaging.sendToDevice(devices, {
+      data: {
+        title: `Je bent uitgenodigd voor een lijst`,
+        body: `${res.locals.user.username} heeft je uitgenodigd voor een drank lijst!`,
+        data: JSON.stringify({ url: `${process.env.FRONTEND_URL}/join/${list.shareId}` }),
+        actions: JSON.stringify([
+          { action: 'join', title: 'Mee doen' },
+          { action: 'close', title: 'Sluiten' },
+        ]),
+      }
+    });
+  }
+  
   Promise.all(found.map(f => sendJoinRequest(f, res.locals.user, list))).then((e) => {
     res.json(list);
   }).catch((e) => {
@@ -107,7 +111,6 @@ routes.put("/list", async (req, res) => {
 
 routes.post("/list/user", async (req, res) => {
   const list = await List.findOneAndUpdate({ shareId: req.body.shareId, 'users.user': { $ne: res.locals.user._id } }, { $push: { users: { drinks: [], user: res.locals.user._id } } });
-  messaging.subscribeToTopic(res.locals.user.messageTokens, `/topics/list_${list._id}`);
   if (list) {
     res.status(201).send();
   } else {
@@ -116,20 +119,23 @@ routes.post("/list/user", async (req, res) => {
 });
 
 routes.post("/list/notify", async (req, res) => {
-  const list = await List.findOne({ id: req.body.id, owner: res.locals.user._id });
-
-  messaging.send({
-    data: {
-      title: `Vul je lijst in.`,
-      body: `${res.locals.user.username} heeft gevraagd of je de lijst kan invullen!`,
-      data: JSON.stringify({ url: `${process.env.FRONTEND_URL}` }),
-      actions: JSON.stringify([
-        { action: 'join', title: 'Invullen' },
-        { action: 'close', title: 'Sluiten' },
-      ]),
-    },
-    topic:`/topics/list_${list._id}`
-  });
+  const list = await List.findOne({ _id: req.body.id, owner: res.locals.user._id }).populate("users.user");
+  const devices = list.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.messageTokens], []);
+  if(devices.length > 0){
+    console.log("sending to ", devices);
+    messaging.sendToDevice(devices,{
+      data: {
+        title: `Vul je lijst in.`,
+        body: `${res.locals.user.username} heeft gevraagd of je de lijst kan invullen!`,
+        data: JSON.stringify({ url: `${process.env.FRONTEND_URL}` }),
+        actions: JSON.stringify([
+          { action: 'join', title: 'Invullen' },
+          { action: 'close', title: 'Sluiten' },
+        ]),
+      }
+    });
+  }
+  res.send();
 });
 
 routes.post("/list/drink", async (req, res) => {

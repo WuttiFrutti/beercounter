@@ -38,9 +38,9 @@ export const mapDrinksToGraph = (drinks, { datapoints = 10, forceDif = undefined
         points.push(reducer(drinks.filter(d => new Date(d.createdAt).getTime() <= i) || points.length === datapoints - 1, i));
         drinks = drinks.filter(d => new Date(d.createdAt).getTime() > i)
     }
-    // if(drinks.length !== 0){
-    //     points[points.length] = reducer(drinks, lastDate);
-    // }
+    if(drinks.length !== 0){
+        points[points.length] = reducer(drinks, lastDate);
+    }
 
     return cumulate ? points.map(cumulativeMap) : points;
 }

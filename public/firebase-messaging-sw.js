@@ -21,7 +21,6 @@ const messaging = firebase.messaging();
 
 
 messaging.onBackgroundMessage(function(payload) {
-  console.log("Received background message ", payload);
   const { data, body, actions } = payload.data;
 
   const notificationOptions = {
@@ -34,12 +33,9 @@ messaging.onBackgroundMessage(function(payload) {
 
 self.addEventListener('notificationclick', function(e) {  
   const notification = e.notification;
-  console.log(e.action);
   if(e.action === "join"){
-    console.log('opening'+ notification.data.url);
     clients.openWindow(notification.data.url);
   }else{
-    console.log('closing'+ notification.data.url);
     notification.close();
   }
 }, false);

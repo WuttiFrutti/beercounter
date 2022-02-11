@@ -23,7 +23,6 @@ export const notificationPermissions = async () => {
         await Notification.requestPermission();
         const token = await getToken(messaging);
         console.log("Token requested:", token);
-        console.log(messaging)
 
         messaging.onMessageHandler = function(payload) {
             console.log("Received foreground message ", payload);
@@ -36,9 +35,6 @@ export const notificationPermissions = async () => {
             };
           
             const not = messaging.swRegistration.showNotification(payload.data.title, notificationOptions);
-            not.then((e) => {
-                console.log(e);
-            })
           };
 
         return token;

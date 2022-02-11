@@ -13,7 +13,7 @@ import Graph from './../Components/Statistics/Graph';
 import { notifyList } from "../Config/Axios";
 
 const MyLists = () => {
-    const lists  = MainStore.useState(s => s.lists);
+    const lists = MainStore.useState(s => s.lists);
     const user = MainStore.useState(s => s.user);
     const owned = lists.filter(l => l.owner === user._id);
 
@@ -51,19 +51,20 @@ const MyLists = () => {
                     <CreateList />
                     {owned?.map((list, index) => <Fragment key={list._id}><ListItemButton
                         key={list._id}
-                        onClick={() => toggle(index)}
                     >
                         <ListItemText
                             primary={list.name}
                             secondary={`Totaal: ${list.total}`}
                         />
-                        <IconButton onClick={() => notifyList(list.id)} edge="end" sx={{marginRight:"0.1em"}} aria-label="notify">
+                        <IconButton onClick={() => notifyList(list._id)} edge="end" sx={{ marginRight: "0.1em" }} aria-label="notify">
                             <Notify />
                         </IconButton>
-                        <IconButton onClick={() => share(list.shareId)} edge="end" sx={{marginRight:"0.1em"}} aria-label="share">
+                        <IconButton onClick={() => share(list.shareId)} edge="end" sx={{ marginRight: "0.1em" }} aria-label="share">
                             <Share />
                         </IconButton>
-                        {isOpen(index) ? <ExpandLess fontSize="medium" /> : <ExpandMore fontSize="medium" />}
+                        <IconButton onClick={() => toggle(index)}>
+                            {isOpen(index) ? <ExpandLess fontSize="medium" /> : <ExpandMore fontSize="medium" />}
+                        </IconButton>
                     </ListItemButton>
                         <Collapse in={isOpen(index)} timeout="auto" unmountOnExit>
                             <MyListItemGraph listId={list._id} />
