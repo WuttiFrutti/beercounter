@@ -107,11 +107,29 @@ routes.put("/list", async (req, res) => {
 
 routes.post("/list/user", async (req, res) => {
   const list = await List.findOneAndUpdate({ shareId: req.body.shareId, 'users.user': { $ne: res.locals.user._id } }, { $push: { users: { drinks: [], user: res.locals.user._id } } });
+  messaging.subscribeToTopic(res.locals.user.messageTokens, `list/${list._id}`);
   if (list) {
     res.status(201).send();
   } else {
     res.status(404).send();
   }
+});
+
+routes.post("list/notify", async (req, res) => {
+  const list = await List.findOne({ id: req.body.id, owner: res.locals.user._id });
+
+  messaging.send({
+    data: {
+      title: `Vul je lijst in.`,
+      body: `${res.locals.user.username} heeft gevraagd of je de lijst kan invullen!`,
+      data: JSON.stringify({ url: `${process.env.FRONTEND_URL}` }),
+      actions: JSON.stringify([
+        { action: 'join', title: 'Invullen' },
+        { action: 'close', title: 'Sluiten' },
+      ]),
+    },
+    topic:`list/${list._id}`
+  });
 });
 
 routes.post("/list/drink", async (req, res) => {
