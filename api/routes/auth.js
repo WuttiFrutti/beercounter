@@ -3,6 +3,8 @@ const User = require("../database/models/User");
 const { v4: uuid } = require('uuid');
 const { Validator, mapper } = require('../validator');
 
+const year = 1000*60*60*24*365;
+
 routes.get('/validate', async (req, res) => {
     if (!req.cookies.token) {
         res.status(401).send();
@@ -45,6 +47,18 @@ routes.post('/register', async (req, res) => {
     }
 });
 
+routes.delete("/logout", async (req, res) => {
+  if (req.cookies.token !== undefined) {
+    await User.updateOne({ "tokens.token": req.cookies.token }, {
+        $pull:{
+          tokens: { token: req.cookies.token }
+        }
+      });
+    res.status(200).send();
+  }
+  res.status(401).send();
+})
+
 
 routes.post("/login", async (req, res) => {
     const v = new Validator(req.body, {
@@ -73,7 +87,7 @@ routes.post("/login", async (req, res) => {
             const token = uuid();
             user.tokens.push({token:token, expire:!!req.body.expire});
             await user.save();
-            return res.status(201).cookie("token", token).send({ username: user.username, email: user.email, _id: user._id });
+            return res.status(201).cookie("token", token, req.body.expire ? {} : { maxAge: year }).send({ username: user.username, email: user.email, _id: user._id });
         }
         else {
             return res.status(400).send({

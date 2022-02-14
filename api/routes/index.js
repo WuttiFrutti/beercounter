@@ -11,12 +11,36 @@ const { EndedList } = List;
 const messaging = require("../messaging/messaging");
 
 
+
+
+const expirationCheck = async (req, user) => {
+  const token = user.getTokens().find(t => t.token === req.cookies.token);
+  
+  if(!token){
+    await User.updateOne({ "tokens.token": req.cookies.token }, {
+      $pull:{
+        tokens: { token: req.cookies.token }
+      }
+    });
+    return false;
+  }
+  return true;
+}
+
 routes.use(async (req, res, next) => {
   if (req.cookies.token !== undefined) {
-    const user = await User.findOneAndUpdate({ "tokens.token": req.cookies.token }, { $set: { "tokens.$.updatedAt": Date.now() } });
+    const user = await User.findOneAndUpdate({ "tokens.token": req.cookies.token }, { 
+      $set: {
+        "tokens.$.updatedAt": Date.now()
+      }
+    });
     if (user !== null) {
-      res.locals.user = user;
-      next();
+      if(expirationCheck(req,user)){
+        res.locals.user = user;
+        next();
+      }else{
+        res.status(401).cookie("token","",{ maxAge:0 }).send({ message:"je Sessie is verlopen!" });
+      }
       return;
     }
   }
@@ -52,7 +76,7 @@ routes.get("/list/:listId/drinks", async (req, res) => {
 });
 
 routes.post("/user/messaging", async (req, res) => {
-  res.locals.user.messageTokens = req.body.token;
+  res.locals.user.tokens.find(t => t.token === req.cookies.token).messageToken = req.body.token;
   await res.locals.user.save();
   res.send();
 });
@@ -71,7 +95,7 @@ routes.post("/list", async (req, res) => {
 
   const list = await new List({ name: req.body.name, price: req.body.price, owner: res.locals.user._id, users: req.body.join ? [{ drinks: [], user: res.locals.user._id }] : [] }).save();
 
-  const devices = found.map(u => u.messageTokens).flat();
+  const devices = found.map(u => u.getTokens().map(t => t.messageToken)).flat();
   if(devices.length > 0){
     messaging.sendToDevice(devices, {
       data: {
@@ -120,7 +144,7 @@ routes.post("/list/user", async (req, res) => {
 
 routes.post("/list/notify", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, owner: res.locals.user._id }).populate("users.user");
-  const devices = list.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.messageTokens], []);
+  const devices = list.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getTokens().map(t => t.messageToken)], []);
   if(devices.length > 0){
     console.log("sending to ", devices);
     messaging.sendToDevice(devices,{
