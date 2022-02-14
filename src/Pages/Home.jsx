@@ -5,13 +5,16 @@ import { MainStore } from './../Config/MainStore';
 import { Stack } from '@mui/material';
 import BeerList from '../Components/Statistics/BeerList';
 import { useHistory } from 'react-router-dom';
+import useCookie from 'react-use-cookie';
 
 
 const Home = () => {
+    const [favorite] = useCookie("favorite-list","");
     const lists = MainStore.useState(s => s.lists);
     const userDrinks = MainStore.useState(s => s.userDrinks);
 
     const history = useHistory();
+    const favoriteList = lists.find(l => l._id === favorite);
 
     return lists === undefined ? null : <>
         <Container sx={{ marginTop: "2em" }} maxWidth="sm">
@@ -32,15 +35,15 @@ const Home = () => {
                     Je hebt nog geen lijsten. Maak er een aan of doe mee met de lijst van iemand anders.
                 </Typography>
                 <Stack direction="row" sx={{ marginTop: "2em" }} spacing={1} justifyContent="end" alignItems="center">
-                    <Button onClick={() => history.push("mijn-lijsten", { animation:"swap-left" })} color="primary" variant='outlined'>Maak zelf een lijst aan</Button>
+                    <Button onClick={() => history.push("lijsten-beheren", { animation:"swap-left" })} color="primary" variant='outlined'>Maak zelf een lijst aan</Button>
                 </Stack>
             </CardContent></Card> : <>
-                {lists !== undefined ? lists.map(list => <Card sx={{marginBottom:"2em"}} key={list._id}><CardContent>
+                { favoriteList !== undefined ?  <Card sx={{marginBottom:"2em"}} key={favoriteList._id}><CardContent>
                     <Typography color="primary" gutterBottom variant="h5" component="div">
-                        {list.name}
+                        {favoriteList.name}
                     </Typography>
-                    <BeerList list={list} />
-                    </CardContent></Card>) : null}
+                    <BeerList list={favoriteList} />
+                    </CardContent></Card> : null}
             </>
 
             }

@@ -1,15 +1,15 @@
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
-import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { List as ListIcon} from '@mui/icons-material';
+import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 
 const buttonMap = [
-    "/yeet",
+    "/mijn-lijsten",
     "/",
-    "/mijn-lijsten"
+    "/lijsten-beheren"
 ]
 
 const BottomNavigator = () => {
@@ -38,9 +38,9 @@ const BottomNavigator = () => {
             }
         }}
     >
-        <BottomNavigationAction label="Favorieten" icon={<FavoriteIcon />} />
+        <BottomNavigationAction label="Mijn lijsten" icon={<ListIcon />} />
         <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Mijn Lijsten" icon={<ListIcon />} />
+        <BottomNavigationAction label="Lijsten Beheren" icon={<PlaylistAddIcon />} />
     </BottomNavigation>
 
 }
