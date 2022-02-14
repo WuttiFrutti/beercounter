@@ -6,7 +6,6 @@ import BeerList from '../Components/Statistics/BeerList';
 import { useHistory } from 'react-router-dom';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { useState } from "react";
 import useCookie from 'react-use-cookie';
 
 const MyLists = () => {
