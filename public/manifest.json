@@ -22,6 +22,9 @@
   "url_handlers": [
     {
       "origin": "https://beerchef.wuttifrutti.nl"
+    },
+    {
+      "origin": "http://beerchef.wuttifrutti.nl"
     }
   ],
   "start_url": ".",

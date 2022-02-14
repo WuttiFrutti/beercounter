@@ -34,6 +34,7 @@ messaging.onBackgroundMessage(function(payload) {
 self.addEventListener('notificationclick', function(e) {  
   const notification = e.notification;
   if(e.action === "join"){
+    notification.close();
     clients.openWindow(notification.data.url);
   }else{
     notification.close();

@@ -14,7 +14,7 @@ const defaultHandler = (message = "Er is iets mis gegaan!") => {
 
 
 
-export const login = async ({email, password}) => {
+export const login = async ({email, password, expire}) => {
     const errors = {};
     if(!email) errors.email = "* Verplicht";
     if(!password) errors.password = "* Verplicht";
@@ -24,7 +24,7 @@ export const login = async ({email, password}) => {
 
 
     try{
-        const { data } = await axios.post("login",{email, password});
+        const { data } = await axios.post("login",{email, password, expire});
         MainStore.update(s => ({...defaultState, darkmode: getCookie("darkmode") === 'true', user: data}));
         await registerMessagingToken(await notificationPermissions());
         await retrieveLists();
@@ -91,12 +91,14 @@ export const registerToken = async (token) => {
     }
 }
 
-export const logout = () => {
+export const logout = async () => {
 
+    await axios.delete("logout");
     setCookie("token","");
     MainStore.update(s => {
         s.user = false;
-    })
+    });
+
 }
 
 export const retrieveLists = async () => {
@@ -110,7 +112,7 @@ export const retrieveLists = async () => {
         });
     }catch(e){
         console.log(e);
-        defaultHandler();
+        defaultHandler(e?.response?.data?.message);
     }
 }
 
