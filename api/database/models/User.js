@@ -8,20 +8,20 @@ const UserSchema = new Schema({
     email: { type: String, required: true, unique: true },
     hash: { type: String, hide: true },
     salt: { type: String, hide: true },
-    token: { type: String, hide: true },
     total: { type: Number, default: 0 },
-    messagingTokens: [{
-        type: new mongoose.Schema(
+    tokens: [{
+        type: new Schema(
             {
                 token: { type:String, required: true },
+                messageToken: { type:String },
+                expire: { type:Boolean, required: true }
             },
             { timestamps: true }
         )
     }]
-});
+});   
 
-
-UserSchema.virtual("messageTokens")
+UserSchema.virtual("messageToken")
     .get(function () {
         return this.messagingTokens.reduce((a, b) => {
             const fourMonthsAgo = new Date();

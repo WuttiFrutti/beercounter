@@ -13,7 +13,7 @@ const messaging = require("../messaging/messaging");
 
 routes.use(async (req, res, next) => {
   if (req.cookies.token !== undefined) {
-    const user = await User.findOne({ token: req.cookies.token });
+    const user = await User.findOneAndUpdate({ "tokens.token": req.cookies.token }, { $set: { "tokens.$.updatedAt": Date.now() } });
     if (user !== null) {
       res.locals.user = user;
       next();

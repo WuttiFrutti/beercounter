@@ -1,9 +1,10 @@
 
+
 export function register(config) {
     if ('serviceWorker' in navigator) {
         // if (process.env.NODE_ENV === 'production') {
             window.addEventListener('load', () => {
-                const swUrl = `${process.env.PUBLIC_URL || ""}/service-worker.js`;
+                const swUrl = `${process.env.PUBLIC_URL || ""}/service-worker.js?v=${process.env.VERSION_HASH}`;
                 registerValidSW(swUrl, config);
             });
         // }
@@ -11,6 +12,7 @@ export function register(config) {
 }
 
 function registerValidSW(swUrl, config) {
+    console.log("serviceworker registering " + process.env.VERSION_HASH);
     navigator.serviceWorker
         .register(swUrl)
         .then(registration => {
@@ -22,13 +24,9 @@ function registerValidSW(swUrl, config) {
                 installingWorker.onstatechange = () => {
                     if (installingWorker.state === 'installed') {
                         if (navigator.serviceWorker.controller) {
-                            console.log(
-                                'New content is available and will be used when all ' +
-                                'tabs for this page are closed. See https://bit.ly/CRA-PWA.'
-                            );
-                            if (config && config.onUpdate) {
-                                config.onUpdate(registration);
-                            }
+                            console.log("unregistering");
+                            registration.unregister();
+                            window.location.reload();
                         } else {
                             console.log('Content is cached for offline use.');
                             if (config && config.onSuccess) {

@@ -8,7 +8,7 @@ routes.get('/validate', async (req, res) => {
         res.status(401).send();
         return;
     }
-    const user = await User.findOne({ token: req.cookies.token });
+    const user = await User.findOne({ "tokens.token": req.cookies.token });
     if (user) {
         res.send({ username: user.username, email: user.email, _id: user._id });
     } else {
@@ -71,7 +71,7 @@ routes.post("/login", async (req, res) => {
     } else {
         if (user.validatePassword(req.body.password)) {
             const token = uuid();
-            user.token = token;
+            user.tokens.push({token:token, expire:!!req.body.expire});
             await user.save();
             return res.status(201).cookie("token", token).send({ username: user.username, email: user.email, _id: user._id });
         }
