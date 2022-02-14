@@ -28,7 +28,7 @@ const Login = ({swap}) => {
         setSending(true);
 
 
-        login({ email: formState.email, password: formState.password }).then(() => {
+        login({ email: formState.email, password: formState.password, expire: !formState.checkbox }).then(() => {
             setSending(false);
         }).catch((e) => {
             setSending(false);
