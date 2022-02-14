@@ -17,7 +17,9 @@ import Wait from './../Pages/Wait';
 const Join = React.lazy(() => import('./../Pages/Join'));
 const Home = React.lazy(() => import('./../Pages/Home'));
 const NotFound = React.lazy(() => import('./../Pages/404'));
-const MyLists = React.lazy(() => import('./../Pages/MyLists'));
+const ManageLists = React.lazy(() => import('../Pages/ManageLists'));
+const MyLists = React.lazy(() => import('../Pages/MyLists'));
+
 
 
 
@@ -29,6 +31,9 @@ const Router = () => {
     <Wait><Switch location={location}>
       <Route exact path="/">
         <Home />
+      </Route>
+      <Route path="/lijsten-beheren">
+        <ManageLists />
       </Route>
       <Route path="/mijn-lijsten">
         <MyLists />
