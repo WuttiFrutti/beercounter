@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import { useState } from "react";
 import { mapDrinksToGraph } from '../../Config/Helpers';
 import moment from "moment"
+import Wait from '../../Pages/Wait';
 
 const graphStyle = {
     line: { stroke: '#ADDDE1' },
@@ -46,7 +47,7 @@ const Graph = ({ data, height = 200 }) => {
                     data.length > 1 ? <>
                         <Switch value={total} onChange={(e) => setTotal(e.target.checked)} />
                         <Typography color="primary" sx={{ fontWeight: "600" }}>Totaal</Typography>
-                    </> : null
+                    </> : <Wait />
                 }
                 <Switch value={cumulative} onChange={(e) => setCumulative(e.target.checked)} />
                 <Typography color="primary" sx={{ fontWeight: "600" }}>Cumulatief</Typography>

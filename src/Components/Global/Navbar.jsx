@@ -28,7 +28,7 @@ const Navbar = () => {
 
 
     return <Box sx={{ flexGrow: 1 }} >
-        <AppBar position="static" sx={{ position: "absolute", zIndex: "1" }} color={!isDarkTheme ? "neutral" : "default"}>
+        <AppBar position="static" sx={{ position: "absolute", zIndex: "1", boxShadow:"#285a84 0px 0px 2px", }} color={!isDarkTheme ? "neutral" : "default"}>
             <Toolbar>
                 <img src={"/assets/logo-small.svg"} alt="text-logo" width="150px" height="100%" />
                 <Box component="div" sx={{ flexGrow: 1 }} />

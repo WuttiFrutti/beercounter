@@ -27,7 +27,8 @@ const BottomNavigator = () => {
             position: "fixed",
             width: "100vw",
             bottom: "0",
-            zIndex:"10"
+            zIndex:"10",
+            boxShadow:"#285a84 0px 0px 2px",
         }}
         showLabels
         value={state}
