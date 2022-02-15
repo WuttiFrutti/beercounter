@@ -60,6 +60,7 @@ export const palette = {
     mode:"dark",
     primary: {
       main: '#285a84',
+      
     },
     secondary: {
       main: '#ef6f53',

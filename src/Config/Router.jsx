@@ -31,7 +31,8 @@ const BackgroundTransition = styled(TransitionGroup)(({style, sx, darkMode}) => 
       backgroundImage: darkMode ? "url(/wavedark.svg)" : "url(/wavelight.svg)",
       backgroundPosition: "bottom",
       backgroundRepeat: "no-repeat",
-      backgroundColor: darkMode ? "#272727" : "#F9FAFC", 
+      backgroundSize:"cover",
+      backgroundColor: darkMode ? "#121212" : "#F9FAFC", 
       ...style,
       ...sx
   }
@@ -84,6 +85,18 @@ const Router = () => {
     <LoginSwitch />
   );
 
+
+  const pageStyle = {}
+  if(user !== false){
+    if(addNav.includes(location.pathname)){
+      pageStyle.marginTop = "3em";
+    }
+    if(addBottom.includes(location.pathname)){
+      pageStyle.marginBottom = "3em";
+    }
+  }
+
+
   return <>
     {user !== false && addNav.includes(location.pathname) ? <Navbar/> : null}
     <BackgroundTransition darkMode={isDarkTheme} className={"transition-div"} childFactory={childFactoryCreator(location.state?.animation || "swap-right")}>
@@ -91,7 +104,7 @@ const Router = () => {
         timeout={250}
         classNames={location.state?.animation || "swap-right"}
         key={user === false ? "Not-loaded" : location.key}
-      ><Page style={user !== false && addNav.includes(location.pathname) ? { marginTop: "4em", paddingBottom: "5em" } : null}>{route}</Page>
+      ><Page style={pageStyle}>{route}</Page>
       </CSSTransition>
     </BackgroundTransition>
     {user !== false && addBottom.includes(location.pathname) ? <BottomNavigator/> : null}
