@@ -21,6 +21,8 @@ const Home = React.lazy(() => import('./../Pages/Home'));
 const NotFound = React.lazy(() => import('./../Pages/404'));
 const ManageLists = React.lazy(() => import('../Pages/ManageLists'));
 const MyLists = React.lazy(() => import('../Pages/MyLists'));
+const SingleList = React.lazy(() => import('../Pages/SingleList'));
+
 
 
 
@@ -29,7 +31,7 @@ const BackgroundTransition = styled(TransitionGroup)(({style, sx, darkMode}) => 
       backgroundImage: darkMode ? "url(/wavedark.svg)" : "url(/wavelight.svg)",
       backgroundPosition: "bottom",
       backgroundRepeat: "no-repeat",
-      backgroundColor: darkMode ? "#121212" : "#F9FAFC", 
+      backgroundColor: darkMode ? "#272727" : "#F9FAFC", 
       ...style,
       ...sx
   }
@@ -66,6 +68,9 @@ const Router = () => {
       </Route>
       <Route path="/join/:shareId">
         <Join />
+      </Route>
+      <Route path="/lijst/:list">
+        <SingleList />
       </Route>
       <Route path="/gesloten">
         {"yeet!"}

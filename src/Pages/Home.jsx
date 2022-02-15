@@ -6,17 +6,18 @@ import { Stack } from '@mui/material';
 import BeerList from '../Components/Statistics/BeerList';
 import { useHistory } from 'react-router-dom';
 import useCookie from 'react-use-cookie';
+import Wait from './Wait';
 
 
 const Home = () => {
-    const [favorite] = useCookie("favorite-list","");
+    const [favorite] = useCookie("favorite-list", "");
     const lists = MainStore.useState(s => s.lists);
     const userDrinks = MainStore.useState(s => s.userDrinks);
 
     const history = useHistory();
     const favoriteList = lists.find(l => l._id === favorite);
 
-    return lists === undefined ? null : <>
+    return lists === undefined ? <Wait /> : <>
         <Container sx={{ marginTop: "2em" }} maxWidth="sm">
             <Card sx={{ marginBottom: "2em" }}>
                 <CardContent>
@@ -27,7 +28,7 @@ const Home = () => {
                 </CardContent>
             </Card>
 
-            {lists === undefined ? null : lists.length === 0 ? <Card><CardContent>
+            {lists === undefined ? <Wait /> : lists.length === 0 ? <Card><CardContent>
                 <Typography color="primary" gutterBottom variant="h5" component="div">
                     Lijsten
                 </Typography>
@@ -35,17 +36,16 @@ const Home = () => {
                     Je hebt nog geen lijsten. Maak er een aan of doe mee met de lijst van iemand anders.
                 </Typography>
                 <Stack direction="row" sx={{ marginTop: "2em" }} spacing={1} justifyContent="end" alignItems="center">
-                    <Button onClick={() => history.push("lijsten-beheren", { animation:"swap-left" })} color="primary" variant='outlined'>Maak zelf een lijst aan</Button>
+                    <Button onClick={() => history.push("lijsten-beheren", { animation: "swap-left" })} color="primary" variant='outlined'>Maak zelf een lijst aan</Button>
                 </Stack>
             </CardContent></Card> : <>
-                { favoriteList !== undefined ?  <Card sx={{marginBottom:"2em"}} key={favoriteList._id}><CardContent>
+                {favoriteList !== undefined ? <Card sx={{ marginBottom: "2em" }} key={favoriteList._id}><CardContent>
                     <Typography color="primary" gutterBottom variant="h5" component="div">
                         {favoriteList.name}
                     </Typography>
                     <BeerList list={favoriteList} />
-                    </CardContent></Card> : null}
+                </CardContent></Card> : <Wait />}
             </>
-
             }
 
 
