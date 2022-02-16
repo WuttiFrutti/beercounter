@@ -1,5 +1,5 @@
 
-import { Card, CardContent, Container, Typography, List, Collapse } from '@mui/material';
+import { Card, CardContent, Container, Typography, List, Collapse, Button, Stack } from '@mui/material';
 import { getDrinks, MainStore } from '../Config/MainStore';
 import CreateList from '../Components/CreateList';
 import IconButton from '@mui/material/IconButton';
@@ -78,7 +78,20 @@ const ManageLists = () => {
 const ManageListItemGraph = ({ listId }) => {
     const drinks = MainStore.useState(getDrinks(listId));
 
-    return <Graph data={drinks}></Graph>
+    return <>
+        <Graph data={drinks} ></Graph>
+        <Stack 
+            spacing={2}
+            justifyContent="center"
+            alignItems="center"
+            direction="row"
+        >
+            <Button variant="contained" color="error">Verwijderen</Button>
+            <Button variant="outlined" color="error">Beëindigen</Button>
+            <Button variant="contained" color="primary">Drankjes aanpassen</Button>
+        </Stack>
+
+    </>
 }
 
 

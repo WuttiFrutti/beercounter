@@ -3,11 +3,9 @@ import { Stack } from '@mui/material';
 import BeerList from './Statistics/BeerList';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import useCookie from 'react-use-cookie';
 
 
-const UserList = ({ list }) => {
-    const [favorite, setFavorite] = useCookie("favorite-list","");
+const UserList = ({ list, favorite, setFavorite }) => {
 
 
 
