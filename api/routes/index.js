@@ -96,7 +96,7 @@ routes.post("/list", async (req, res) => {
 
   const list = await new List({ name: req.body.name, price: req.body.price, owner: res.locals.user._id, users: req.body.join ? [{ drinks: [], user: res.locals.user._id }] : [] }).save();
 
-  const devices = found.map(u => u.getTokens().map(t => t.messageToken)).flat();
+  const devices = found.map(u => u.getMessageTokens()).flat();
   if(devices.length > 0){
     messaging.sendToDevice(devices, {
       data: {
