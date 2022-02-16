@@ -33,6 +33,15 @@ UserSchema.methods.getTokens = function () {
     return this.tokens.filter((token) => !(token.expire && (Date.now() - Date.parse(token.updatedAt)) > process.env.SESSION_REFRESH_TIME))
 }
 
+UserSchema.methods.getMessageTokens = function () {
+    return this.tokens.reduce((a, token) => {
+        if(token.messageToken !== undefined && !(token.expire && (Date.now() - Date.parse(token.updatedAt)) > process.env.SESSION_REFRESH_TIME)){
+            a.push(token.messageToken);
+        }
+        return a;
+    },[])
+}
+
 UserSchema.methods.validatePassword = function (password) {
     const hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, `sha512`).toString(`hex`);
     return this.hash === hash;
