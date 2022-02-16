@@ -145,7 +145,7 @@ routes.post("/list/user", async (req, res) => {
 
 routes.post("/list/notify", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, owner: res.locals.user._id }).populate("users.user");
-  const devices = list.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getTokens().map(t => t.messageToken)], []);
+  const devices = list.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getMessageTokens()], []);
   if(devices.length > 0){
     console.log("sending to ", devices);
     messaging.sendToDevice(devices,{
