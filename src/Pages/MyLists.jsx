@@ -5,9 +5,12 @@ import { Stack } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import UserList from './../Components/UserList';
 import Wait from './Wait';
+import useCookie from 'react-use-cookie';
 
 const MyLists = () => {
     const lists = MainStore.useState(s => s.lists);
+    const [favorite, setFavorite] = useCookie("favorite-list","");
+
     const history = useHistory();
 
     return lists === undefined ? null : <>
@@ -23,7 +26,7 @@ const MyLists = () => {
                     <Button onClick={() => history.push("lijsten-beheren", { animation: "swap-left" })} color="primary" variant='outlined'>Maak zelf een lijst aan</Button>
                 </Stack>
             </CardContent></Card> : <>
-                {lists !== undefined ? lists.map(list => <UserList list={list} />) : <Wait />}
+                {lists !== undefined ? lists.map(list => <UserList key={list._id} favorite={favorite} setFavorite={setFavorite} list={list} />) : <Wait />}
             </>}
         </Container>
     </>

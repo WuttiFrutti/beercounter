@@ -18,7 +18,8 @@ const BottomNavigator = () => {
     const [state, setState] = useState(1)
 
     useEffect(() => {
-        setState(buttonMap.findIndex(s => s === location.pathname))
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        setState(buttonMap.findIndex(s => s === location.pathname));
     },[setState,location])
 
 

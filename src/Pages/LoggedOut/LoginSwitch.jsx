@@ -11,18 +11,18 @@ import Wait from './../Wait';
 const Login = React.lazy(() => import('./Login'));
 const Register = React.lazy(() => import('./Register'));
 
-const LoginSwitch = () => {
+const LoginSwitch = ({ setLoaded, promise }) => {
   const [state, setState] = useState("loading");
   const [animation, setAnimation] = useState("swap-right");
 
   const swap = (state, animation) => {
-    document.querySelector("#main-page").scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({top: 0, behavior: 'smooth'});
     setAnimation(animation);
     setState(state);
   }
 
   const stateComponents = {
-    loading: <PreLoading swap={swap} />,
+    loading: <PreLoading swap={swap} setLoaded={setLoaded}  promise={promise}/>,
     login: <Wait><Login swap={swap} /></Wait>,
     register: <Wait><Register swap={swap} /></Wait>
   }

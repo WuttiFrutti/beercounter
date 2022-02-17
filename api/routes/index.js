@@ -197,7 +197,10 @@ routes.delete("/list/drink", async (req, res) => {
 
 
   res.status(200).send();
-})
+});
+
+
+
 
 
 
