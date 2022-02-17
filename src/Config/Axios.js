@@ -75,7 +75,7 @@ export const checkLogin = async () => {
         });
         await registerMessagingToken(await notificationPermissions());
         await retrieveLists();
-        return true;
+        return data;
     }catch(e){
         setCookie("token","");
         return false;
@@ -224,4 +224,4 @@ export const notifyList = async (listId) => {
 
 const hasDuplicates = (array) =>  (new Set(array)).size !== array.length;
 
-const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+export const timeout = (ms) => new Promise(resolve => setTimeout(resolve, ms));

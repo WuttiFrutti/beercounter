@@ -11,13 +11,18 @@ const Loading = styled(Box)({
   transform: "translate(-50%,-50%)"
 })
 
-const PreLoading = ({ swap }) => {
+const PreLoading = ({ swap, deferLoading, setUser }) => {
 
 
   useEffect(() => {
     if (swap) {
-      checkLogin().then((res) => {
-        if (!res) swap("login", "swap-right");
+      checkLogin().then(async (res) => {
+        deferLoading.then(() => {
+          console.log("defer loaded")
+          if (!res) swap("login", "swap-right");
+          setUser(res);
+        });
+        
       });
     }
   }, [swap])

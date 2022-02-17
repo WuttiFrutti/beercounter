@@ -15,6 +15,7 @@ import Page from '../Pages/Page';
 import Wait from './../Pages/Wait';
 import styled from "styled-components";
 import { useTheme } from '@mui/system';
+import { timeout } from './Axios';
 
 const Join = React.lazy(() => import('./../Pages/Join'));
 const Home = React.lazy(() => import('./../Pages/Home'));
@@ -41,7 +42,8 @@ const BackgroundTransition = styled(TransitionGroup)(({style, sx, darkMode}) => 
 const Router = () => {
   const isDarkTheme = useTheme().palette.mode === 'dark';
   const location = useLocation();
-  const user = MainStore.useState(s => s.user);
+  const [user, setUser] = React.useState(false);
+  const [deferLoading, setDeferLoading] = React.useState(Promise.resolve());
 
   const addNav = [
     "/",
@@ -59,7 +61,7 @@ const Router = () => {
   const route = user !== false ? (
     <Wait><Switch location={location}>
       <Route exact path="/">
-        <Home />
+        <Home setDeferLoading={setDeferLoading} />
       </Route>
       <Route path="/lijsten-beheren">
         <ManageLists />
@@ -82,7 +84,7 @@ const Router = () => {
     </Switch>
     </Wait>
   ) : (
-    <LoginSwitch />
+    <LoginSwitch setUser={setUser} deferLoading={deferLoading} />
   );
 
 

@@ -11,7 +11,7 @@ import Wait from './../Wait';
 const Login = React.lazy(() => import('./Login'));
 const Register = React.lazy(() => import('./Register'));
 
-const LoginSwitch = () => {
+const LoginSwitch = ({ deferLoading, setUser }) => {
   const [state, setState] = useState("loading");
   const [animation, setAnimation] = useState("swap-right");
 
@@ -22,7 +22,7 @@ const LoginSwitch = () => {
   }
 
   const stateComponents = {
-    loading: <PreLoading swap={swap} />,
+    loading: <PreLoading swap={swap} setUser={setUser} deferLoading={deferLoading} />,
     login: <Wait><Login swap={swap} /></Wait>,
     register: <Wait><Register swap={swap} /></Wait>
   }

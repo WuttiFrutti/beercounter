@@ -6,18 +6,22 @@ import { Stack } from '@mui/material';
 import BeerList from '../Components/Statistics/BeerList';
 import { useHistory } from 'react-router-dom';
 import useCookie from 'react-use-cookie';
+import { useEffect } from "react";
 import Wait from './Wait';
+import { timeout } from './../Config/Axios';
 
 
-const Home = () => {
+const Home = ({ setDeferLoading }) => {
     const [favorite] = useCookie("favorite-list", "");
     const lists = MainStore.useState(s => s.lists);
     const userDrinks = MainStore.useState(s => s.userDrinks);
 
     const history = useHistory();
     const favoriteList = lists.find(l => l._id === favorite);
-
-    console.log(favoriteList)
+    
+    setDeferLoading(timeout(1000));
+    useEffect(() => {
+    })
 
     return lists === undefined ? <Wait /> : <>
         <Container sx={{ marginTop: "2em" }} maxWidth="sm">
