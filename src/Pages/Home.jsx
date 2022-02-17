@@ -6,10 +6,7 @@ import { Stack } from '@mui/material';
 import BeerList from '../Components/Statistics/BeerList';
 import { useHistory } from 'react-router-dom';
 import useCookie from 'react-use-cookie';
-import { useEffect } from "react";
 import Wait from './Wait';
-import { timeout } from './../Config/Axios';
-
 
 const Home = () => {
     const [favorite] = useCookie("favorite-list", "");
@@ -29,7 +26,7 @@ const Home = () => {
                     <Graph data={userDrinks} />
                 </CardContent>
             </Card>
-            {favoriteList !== undefined ? <Wait /> : lists.length === 0 ? <Card><CardContent>
+            {favoriteList === undefined ? <Wait /> : lists.length === 0 ? <Card><CardContent>
                 <Typography color="primary" gutterBottom variant="h5" component="div">
                     Favorite lijst
                 </Typography>

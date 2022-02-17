@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Container, IconButton, Typography } from '@mui/material';
+import { Card, CardContent, IconButton, Typography } from '@mui/material';
 import { Stack } from '@mui/material';
 import BeerList from './Statistics/BeerList';
 import FavoriteIcon from '@mui/icons-material/Favorite';

@@ -15,7 +15,6 @@ import Page from '../Pages/Page';
 import Wait from './../Pages/Wait';
 import styled from "styled-components";
 import { useTheme } from '@mui/system';
-import { timeout } from './Axios';
 
 const promises = {
   Join: () => import('./../Pages/Join'),
@@ -48,8 +47,6 @@ const BackgroundTransition = styled(TransitionGroup)(({style, sx, darkMode}) => 
       ...sx
   }
 })
-
-console.log(Join);
 
 const paths = {
   "/":{
