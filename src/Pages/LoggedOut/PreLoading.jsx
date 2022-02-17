@@ -17,7 +17,7 @@ const PreLoading = ({ swap, setLoaded, promise }) => {
   useEffect(() => {
     if (swap) {
       checkLogin().then((res) => {
-          Promise.resolve(promise).then(() => {
+          Promise.resolve(promise()).then(() => {
             setLoaded(true)
             if (!res) swap("login", "swap-right");
           })

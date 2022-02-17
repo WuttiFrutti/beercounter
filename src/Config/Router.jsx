@@ -17,12 +17,21 @@ import styled from "styled-components";
 import { useTheme } from '@mui/system';
 import { timeout } from './Axios';
 
-const Join = React.lazy(() => import('./../Pages/Join'));
-const Home = React.lazy(() => import('./../Pages/Home'));
-const NotFound = React.lazy(() => import('./../Pages/404'));
-const ManageLists = React.lazy(() => import('../Pages/ManageLists'));
-const MyLists = React.lazy(() => import('../Pages/MyLists'));
-const SingleList = React.lazy(() => import('../Pages/SingleList'));
+const promises = {
+  Join: () => import('./../Pages/Join'),
+  Home: () => import('./../Pages/Home'),
+  NotFound: () => import('./../Pages/404'),
+  ManageLists: () => import('./../Pages/ManageLists'),
+  MyLists: () => import('./../Pages/MyLists'),
+  SingleList: () => import('./../Pages/SingleList'),
+}
+
+const Join = React.lazy(promises.Join);
+const Home = React.lazy(promises.Home);
+const NotFound = React.lazy(promises.NotFound);
+const ManageLists = React.lazy(promises.ManageLists);
+const MyLists = React.lazy(promises.MyLists);
+const SingleList = React.lazy(promises.SingleList);
 
 
 
@@ -40,36 +49,44 @@ const BackgroundTransition = styled(TransitionGroup)(({style, sx, darkMode}) => 
   }
 })
 
+console.log(Join);
+
 const paths = {
   "/":{
     addNav: true,
     addBottom: true,
     component: <Home />,
+    promise: promises.Home
   },
   "/lijsten-beheren":{
     addNav: true,
     addBottom: true,
-    component: <ManageLists />
+    component: <ManageLists />,
+    promise: promises.ManageLists
   },
   "/lijst/:list":{
     addNav: true,
     addBottom: true,
-    component: <SingleList />
+    component: <SingleList />,
+    promise: promises.SingleList
   },
   "/mijn-lijsten":{
     addNav: true,
     addBottom: true,
-    component: <MyLists />
+    component: <MyLists />,
+    promise: promises.MyLists
   },
   "/join/:shareId":{
     addNav: true,
     addBottom: true,
-    component: <Join />
+    component: <Join />,
+    promise: promises.Join
   },
   "*":{
     addNav: false,
     addBottom: false,
-    component: <NotFound />
+    component: <NotFound />,
+    promise: promises.NotFound
   }
 }
 
