@@ -5,7 +5,7 @@ import { cloneElement, useState } from 'react';
 import PreLoading from './PreLoading';
 import { Container } from '@mui/material';
 import { Box } from '@mui/system';
-import React, { Suspense } from 'react';
+import React from 'react';
 import Wait from './../Wait';
 
 const Login = React.lazy(() => import('./Login'));

@@ -23,7 +23,7 @@ const PreLoading = ({ swap, setLoaded, promise }) => {
           })
       });
     }
-  }, [swap])
+  }, [swap, promise, setLoaded])
 
 
   return <div><Loading><CircularProgress /></Loading></div>

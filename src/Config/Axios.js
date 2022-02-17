@@ -88,7 +88,7 @@ export const checkLogin = async () => {
 
 export const registerToken = async (token) => {
     try{
-        const { data } = await axios.post("user/messaging", { token });
+        await axios.post("user/messaging", { token });
         console.log(`Registered: ${token} for messaging`);
     }catch(e){
         defaultHandler("Kan notificaties niet tonen!");
@@ -122,7 +122,7 @@ export const retrieveLists = async () => {
 
 export const joinList = async (shareId) => {
     try{
-        const { data } = await axios.post("list/user",{ shareId: shareId });
+        await axios.post("list/user",{ shareId: shareId });
         await retrieveLists();
     }catch(e){
         defaultHandler("Deze lijst bestaat niet!");
@@ -144,7 +144,7 @@ export const addDrink = async (listId, amount) => {
 
 export const undoDrink = async (listId, drinkId) => {
     try{
-        const { data } = await axios.delete("list/drink",{ data:{ id:drinkId } });
+        await axios.delete("list/drink",{ data:{ id:drinkId } });
         await retrieveDrinksForListUser(listId, MainStore.currentState.user._id);
         await retrieveLists();
     }catch(e){
@@ -186,7 +186,7 @@ export const retrieveDrinksForList = async (listId) => {
 
 export const registerMessagingToken = async (token) => {
     try{
-        const { data } = await axios.post(`/user/messaging`, { token });
+        await axios.post(`/user/messaging`, { token });
     }catch(e){
         defaultHandler();
     }
@@ -206,7 +206,7 @@ export const createList = async (name, price, join, users) => {
     }
 
     try{
-        const response = await axios.post("list",{ name, join, price, users });
+        await axios.post("list",{ name, join, price, users });
         await retrieveLists();
     }catch(e){
         if(e?.response?.status === 404){
@@ -220,7 +220,7 @@ export const createList = async (name, price, join, users) => {
 
 export const notifyList = async (listId) => {
     try{
-        const { data } = await axios.post(`/list/notify`, { id:listId });
+        await axios.post(`/list/notify`, { id:listId });
     }catch(e){
         defaultHandler();
     }
