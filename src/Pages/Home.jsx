@@ -11,7 +11,7 @@ import Wait from './Wait';
 import { timeout } from './../Config/Axios';
 
 
-const Home = ({ setDeferLoading }) => {
+const Home = () => {
     const [favorite] = useCookie("favorite-list", "");
     const lists = MainStore.useState(s => s.lists);
     const userDrinks = MainStore.useState(s => s.userDrinks);
@@ -19,10 +19,6 @@ const Home = ({ setDeferLoading }) => {
     const history = useHistory();
     const favoriteList = lists.find(l => l._id === favorite);
     
-    setDeferLoading(timeout(1000));
-    useEffect(() => {
-    })
-
     return lists === undefined ? <Wait /> : <>
         <Container sx={{ marginTop: "2em" }} maxWidth="sm">
             <Card sx={{ marginBottom: "2em" }}>

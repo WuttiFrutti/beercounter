@@ -25,9 +25,13 @@ export const login = async ({email, password, expire}) => {
 
     try{
         const { data } = await axios.post("login",{email, password, expire});
-        MainStore.update(s => ({...defaultState, darkmode: getCookie("darkmode") === 'true', user: data}));
+        MainStore.update(s => defaultState);
         await registerMessagingToken(await notificationPermissions());
         await retrieveLists();
+        MainStore.update(s => {
+            s.darkmode = getCookie("darkmode") === 'true'
+            s.user = data
+        });
     }catch(e){
         if(e?.response?.data) throw new AxiosError(e.response.data);
         defaultHandler();
@@ -70,11 +74,11 @@ export const checkLogin = async () => {
 
     try{
         const { data } = await axios.get("validate");
+        await registerMessagingToken(await notificationPermissions());
+        await retrieveLists();
         MainStore.update(s => {
             s.user = data;
         });
-        await registerMessagingToken(await notificationPermissions());
-        await retrieveLists();
         return data;
     }catch(e){
         setCookie("token","");
