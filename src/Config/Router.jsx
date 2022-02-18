@@ -1,13 +1,12 @@
-
-import { Switch, Route, useLocation } from "react-router-dom";
-import { TransitionGroup, CSSTransition } from 'react-transition-group'
+import { Switch, Route, useLocation, useHistory, useParams } from "react-router-dom";
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { cloneElement } from 'react';
 import { MainStore } from './MainStore';
 import React from "react";
 import LoginSwitch from './../Pages/LoggedOut/LoginSwitch';
 import BottomNavigator from './../Components/Global/BottomNavigator';
 import Navbar from '../Components/Global/Navbar';
-
+import { joinList } from './Axios';
 
 
 
@@ -15,6 +14,7 @@ import Page from '../Pages/Page';
 import Wait from './../Pages/Wait';
 import styled from "styled-components";
 import { useTheme } from '@mui/system';
+import { matchPath } from "react-router-dom/cjs/react-router-dom.min";
 
 const promises = {
   Join: () => import('./../Pages/Join'),
@@ -24,6 +24,7 @@ const promises = {
   MyLists: () => import('./../Pages/MyLists'),
   SingleList: () => import('./../Pages/SingleList'),
 }
+
 
 const Join = React.lazy(promises.Join);
 const Home = React.lazy(promises.Home);
@@ -53,54 +54,80 @@ const paths = {
     addNav: true,
     addBottom: true,
     component: <Home />,
-    promise: promises.Home
+    promise: () => promises.Home,
+    exact: true
   },
   "/lijsten-beheren":{
     addNav: true,
     addBottom: true,
     component: <ManageLists />,
-    promise: promises.ManageLists
+    promise: () => promises.ManageLists
   },
   "/lijst/:list":{
     addNav: true,
     addBottom: true,
     component: <SingleList />,
-    promise: promises.SingleList
+    promise: () => promises.SingleList
   },
   "/mijn-lijsten":{
     addNav: true,
     addBottom: true,
     component: <MyLists />,
-    promise: promises.MyLists
+    promise: () => promises.MyLists
   },
   "/join/:shareId":{
     addNav: true,
     addBottom: true,
     component: <Join />,
-    promise: promises.Join
+    promise: (history, params) => {
+      joinList(params.shareId).then(() => {
+        history.push("/");
+        MainStore.update(s => ({ ...s ,snack:{ open:true, severity:"info", children:<>Je doet nu mee aan de lijst!</> }  }));
+      }).catch(() => {
+        history.push("/");
+      });
+    }
   },
   "*":{
     addNav: false,
     addBottom: false,
     component: <NotFound />,
-    promise: promises.NotFound
+    promise: () => promises.NotFound
   }
 }
 
 const Router = () => {
   const isDarkTheme = useTheme().palette.mode === 'dark';
   const location = useLocation();
+  const history = useHistory();
+  const params = useParams();
+  const switchRef = React.useRef();
+
   const [loaded, setLoaded] = React.useState(false)
   const user = MainStore.useState(s => s.user);
+
+  console.log(params, location, history);
+
+  const matchedRoute = Object.entries(paths).reduce((a, [path, obj]) => {
+    if(matchPath(location.pathname, {
+      path:path,
+      exact:obj.exact
+    })){
+      return {
+        ...obj,
+        path:path
+      }
+    }
+  }, {})
 
   const route = loaded && user ? (
     <Wait>
       <Switch location={location}>
-        {Object.entries(paths).map(([path, options]) => <Route key={path} path={path} exact>{options.component}</Route>)}
+        {Object.entries(paths).map(([path, options]) => <Route key={path} path={path} exact={options.exact}>{options.component}</Route>)}
       </Switch>
     </Wait>
   ) : (
-    <LoginSwitch setLoaded={setLoaded} promise={paths[location.pathname].promise}/>
+    <LoginSwitch setLoaded={setLoaded} promise={paths[location.pathname].promise(history, params)}/>
   );
 
 
