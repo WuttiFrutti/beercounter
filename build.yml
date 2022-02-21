@@ -1,0 +1,5 @@
+beerchef:
+  registry: dockerhub
+  dockerfilePath: .
+beerchef-api:
+ dockerfilePath: api
