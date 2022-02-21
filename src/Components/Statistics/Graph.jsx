@@ -37,7 +37,7 @@ const Graph = ({ data, height = 200 }) => {
             <FlexibleWidthXYPlot height={height}>
                 <VerticalBarSeries color="#ef6f53" animation data={mappedData} />
                 <XAxis tickTotal={datapoints} title="Tijd" style={{ ...graphStyle }} tickFormat={(d, i) => {
-                    const date = new Date(mappedData[i].time);
+                    const date = new Date(mappedData[i].time - 1000);
                     return `${date.getDate()}/${date.getMonth() + 1}`
                 }} />
                 <YAxis title="Bier" style={graphStyle} />

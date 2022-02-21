@@ -95,13 +95,14 @@ export const registerToken = async (token) => {
     }
 }
 
-export const logout = async () => {
+export const logout = async (history) => {
 
     await axios.delete("logout");
     setCookie("token","");
     MainStore.update(s => {
         s.user = false;
     });
+    if(history) history.push("/", { animation: false });
 
 }
 

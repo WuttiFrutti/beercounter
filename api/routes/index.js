@@ -121,17 +121,28 @@ routes.post("/list", async (req, res) => {
 });
 
 routes.put("/list", async (req, res) => {
-  const list = await List.findOneAndRemove({ _id: req.body.id, owner: res.locals.user._id });
+  const list = await List.findOneAndRemove({ _id: req.body.id, owner: res.locals.user._id }).populate("users.user");
 
   let returnList = null;
   if (list !== null) {
     returnList = await new EndedList(list.toJSON()).save();
-  } else {
-    const list = await EndedList.findOneAndRemove({ _id: req.body.id, owner: res.locals.user._id });
-    returnList = await new List(list.toJSON()).save();
   }
 
-  res.json(returnList);
+  const devices = returnList.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getMessageTokens()], []);
+
+  messaging.sendToDevice(devices,{
+    data: {
+      title: `${res.locals.user.username}. heeft een lijst beëindigd!`,
+      body: `${res.locals.user.username} heeft lijst ${returnList.name} beëidigd!`,
+      data: JSON.stringify({ url: `${process.env.FRONTEND_URL}` }),
+      actions: JSON.stringify([
+        { action: 'join', title: 'Bekijken' },
+        { action: 'close', title: 'Sluiten' },
+      ]),
+    }
+  });
+
+  res.status(returnList ? 200 : 404).json(returnList);
 });
 
 routes.post("/list/user", async (req, res) => {

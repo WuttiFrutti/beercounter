@@ -135,7 +135,7 @@ const Router = () => {
     <BackgroundTransition darkMode={isDarkTheme} className={"transition-div"} childFactory={childFactoryCreator(location.state?.animation || "swap-right")}>
       <CSSTransition
         timeout={250}
-        classNames={location.state?.animation || "swap-right"}
+        classNames={location.state?.animation === undefined ? "swap-right" : location.state.animation || ""}
         key={!loaded ? "Not-loaded" : user ? location.key : "user"}
       ><Page style={pageStyle}>{route}</Page>
       </CSSTransition>

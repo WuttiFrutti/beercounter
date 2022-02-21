@@ -7,6 +7,8 @@ import { getDrinks, MainStore } from './../../Config/MainStore';
 import { Box } from '@mui/system';
 import AddDrink from './AddDrink';
 import { fillListUser } from '../../Config/Helpers';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCrown } from '@fortawesome/free-solid-svg-icons'
 
 
 const BeerList = ({ list }) => {
@@ -24,27 +26,33 @@ const BeerList = ({ list }) => {
         }
     }
 
-    const users = [...list.users];
-    const [userInList] = users.splice(users.findIndex(u => u.user === user._id),1);
+    const users = [...list.users].sort((a, b) => a.total - b.total)
+    const highestNumber = users[users.length - 1].total;
+    const [userInList] = users.splice(users.findIndex(u => u.user === user._id), 1);
 
-    return <>
+    return <>   
+            <Typography variant="subtitle2">
+            Totaal: {list.total} <br/>
+            Prijs: €{((list.total * list.price) / 100).toFixed(2)} 
+            </Typography>
         <List>
             {
-                users.map((user, index) => <BeerListItem listId={list._id}  key={user._id} user={fillListUser(user, userData)} index={index} toggle={toggle} isOpen={isOpen} />)
+                users.map((user, index) => <BeerListItem price={list.price} listId={list._id} key={user._id} highest={highestNumber} user={fillListUser(user, userData)} index={index} toggle={toggle} isOpen={isOpen} />)
             }
             <Divider sx={{ marginTop: "1em" }} component="li" />
-            <BeerListItem listId={list._id} user={fillListUser(userInList, userData)} index={users.length} toggle={toggle} isOpen={isOpen} />
+            <BeerListItem price={list.price} listId={list._id} highest={highestNumber} user={fillListUser(userInList, userData)} index={users.length} toggle={toggle} isOpen={isOpen} />
         </List>
         <Box>
-            <AddDrink listId={list._id} listname={list.name}/>
+            <AddDrink listId={list._id} listname={list.name} />
         </Box>
     </>
 }
 
-const BeerListItem = ({ user, listId, toggle, isOpen, index }) => {
+const BeerListItem = ({ user, listId, toggle, isOpen, index, highest, price }) => {
     return <>
         <ListItemButton onClick={() => toggle(index)} alignItems="flex-start">
-            <ListItemAvatar>
+            <ListItemAvatar sx={{ minWidth: 0, marginRight: "1em" }}>
+                {user.total >= highest ? <FontAwesomeIcon size="lg" icon={faCrown} style={{ color: "gold", position: "relative", left: "50%", transform: "translate(-50%,30%)", zIndex: 1 }} /> : null}
                 <Avatar alt={user.user.username} src="/static/images/avatar/1.jpg" />
             </ListItemAvatar>
             <ListItemText
@@ -59,6 +67,16 @@ const BeerListItem = ({ user, listId, toggle, isOpen, index }) => {
                             color="text.primary"
                         >
                             {user.total}
+                        </Typography>
+                        <br />
+                        {"Prijs: "}
+                        <Typography
+                            sx={{ display: 'inline' }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                        >
+                            €{((user.total * price) / 100).toFixed(2)}
                         </Typography>
                     </>
                 }
