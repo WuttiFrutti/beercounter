@@ -36,7 +36,7 @@ const BottomNavigator = () => {
         onChange={(e, val) => {
             if (val !== state) {
                 setState(val);
-                history.push(buttonMap[val], { animation: val > state ? "swap-left" : "swap-right" })
+                history.push(buttonMap[val], { animation: !buttonMap.includes(location.pathname) ? "swap-left" : false, subAnimation: val > state ? "swap-left" : "swap-right" })
             }
         }}
     >
