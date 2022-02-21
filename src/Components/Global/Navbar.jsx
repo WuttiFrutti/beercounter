@@ -70,12 +70,7 @@ const Navbar = () => {
                     >
                         <MenuItem onClick={() => {
                             handleClose();
-<<<<<<< HEAD
                             logout(history);
-=======
-                            history.push("/")
-                            logout();
->>>>>>> d932f70648d8507468bc9fef41be4a1823810792
                         }}>Uitloggen</MenuItem>
                     </Menu>
                 </div>
