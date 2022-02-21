@@ -1,6 +1,6 @@
 import { Switch, Route, useLocation, useHistory, useParams } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { cloneElement } from 'react';
+import { cloneElement, useCallback } from 'react';
 import { MainStore } from './MainStore';
 import React from "react";
 import LoginSwitch from './../Pages/LoggedOut/LoginSwitch';
@@ -54,14 +54,45 @@ const localPages = {
   "/lijsten-beheren": 2
 }
 
-const MainPages = (args) => {
-  const location = useLocation();
+const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
+
+const MainPages = ({ options, match }) => {
+  const history = useHistory();
+
+  const scroll = useCallback(() => {
+    const el = document.querySelector(".transition-div-child");
+    el.scrollLeft = localPages[match.path] * (el.scrollWidth / 3);
+
+  }, [match])
 
   React.useEffect(() => {
-    const el = document.querySelector(".transition-div-child")
-    const third = el.scrollWidth / 3;
-    el.scrollLeft = localPages[location.pathname] * third;
-  }, [location])
+    scroll();
+  }, [scroll])
+
+  React.useEffect(() => {
+    let eventListener = null;
+    let el = null;
+    setTimeout(() => {
+      el = document.querySelector(".transition-div-child");
+      el.style.scrollBehavior = "unset"
+      scroll();
+      el.style.scrollBehavior = "smooth"
+      let currLoc = match.path
+      eventListener = el.addEventListener('touchend', () => {
+        setTimeout(() => {
+          const newPath = Object.keys(localPages)[Math.floor(map(el.scrollLeft + (window.document.body.scrollWidth / 2), 0, el.scrollWidth, 0, 3))]
+          console.log("yeet", newPath, el.scrollLeft + (window.document.body.scrollWidth / 2), currLoc)
+          if(currLoc !== newPath){
+            currLoc = newPath;
+            history.push(newPath)
+          }
+        }, 500)
+      }, false);
+    }, 1);
+    return () => {
+      el.removeEventListener("touchend", eventListener)
+    }
+  }, [])
 
   return <>
     <Navbar />
@@ -78,7 +109,7 @@ const paths = [
   {
     path: ["/", "/mijn-lijsten", "/lijsten-beheren"],
     noAnimation: true,
-    component: (...args) => <MainPages {...args} />,
+    component: (args) => <MainPages {...args} />,
     promise: ({ path }) => async () => {
       await promises.Home();
       await promises.ManageLists();
@@ -128,7 +159,7 @@ const Router = () => {
     <Wait>
       {
         <Switch location={location}>
-          <Route path={options.path} exact={options.exact}>{<options.component {...options} />}</Route>
+          <Route path={options.path} exact={options.exact}>{<options.component match={match} options={options} />}</Route>
         </Switch>
       }
     </Wait>
@@ -137,7 +168,7 @@ const Router = () => {
   );
 
   const animation = location.state?.animation === undefined ? "swap-right" : location.state.animation || "";
-  if(location.state) location.state.animation = "swap-right";
+  if (location.state) location.state.animation = "swap-right";
 
   return <>
     <BackgroundTransition darkMode={isDarkTheme} className={"transition-div"} childFactory={childFactoryCreator(animation)}>
