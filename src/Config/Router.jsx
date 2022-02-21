@@ -47,18 +47,25 @@ const BackgroundTransition = styled(TransitionGroup)(({ style, sx, darkMode }) =
   }
 });
 
+
+const localPages = {
+  "/mijn-lijsten": 0,
+  "/": 1,
+  "/lijsten-beheren": 2
+}
+
 const MainPages = (args) => {
   const location = useLocation();
 
-  const localPages = {
-    "/mijn-lijsten": 0,
-    "/": 1,
-    "/lijsten-beheren": 2
-  }
+  React.useEffect(() => {
+    const el = document.querySelector(".transition-div-child")
+    const third = el.scrollWidth / 3;
+    el.scrollLeft = localPages[location.pathname] * third;
+  }, [location])
 
   return <>
     <Navbar />
-    <div className="swap-page-wrapper-wrapper" style={{ transform: `translate(-${localPages[location.pathname] * 33.33}%,0)` }}>
+    <div className="swap-page-wrapper-wrapper">
       <div className="swap-page-wrapper"><MyLists /></div>
       <div className="swap-page-wrapper"><Home /></div>
       <div className="swap-page-wrapper"><ManageLists /></div>
@@ -135,6 +142,7 @@ const Router = () => {
   return <>
     <BackgroundTransition darkMode={isDarkTheme} className={"transition-div"} childFactory={childFactoryCreator(animation)}>
       {<CSSTransition
+        className={"transition-div-child"}
         timeout={250}
         classNames={animation}
         key={!loaded ? "Not-loaded" : user ? options.noAnimation || location.key : "user"}
