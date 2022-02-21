@@ -33,6 +33,10 @@ text{
 }
 
 
+.transition-div-child{
+    scroll-behavior: smooth;
+}
+
 
 .swap-page-wrapper-wrapper{
     width: 300vw;
@@ -40,6 +44,7 @@ text{
     transition: .25s;
     display: flex;
     overflow-x: hidden;
+    scroll-behavior: smooth;
     >.swap-page-wrapper{
         width: 100vw;
         height: 100vh;
