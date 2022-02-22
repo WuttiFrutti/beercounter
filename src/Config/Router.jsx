@@ -12,18 +12,19 @@ import Wait from './../Pages/Wait';
 import styled from "styled-components";
 import { useTheme } from '@mui/system';
 import { matchPath } from "react-router-dom/cjs/react-router-dom.min";
-import MainPages, { pagePromises } from './../Components/Global/MainPages';
 
 const promises = {
   NotFound: () => import('./../Pages/404'),
   SingleList: () => import('./../Pages/SingleList'),
-  ...pagePromises
+  MainPages: () => import('./../Components/Global/MainPages'),
 }
 
 
 
 const NotFound = React.lazy(promises.NotFound);
 const SingleList = React.lazy(promises.SingleList);
+const MainPages = React.lazy(promises.MainPages);
+
 
 
 
@@ -48,11 +49,7 @@ const paths = [
     path: ["/", "/mijn-lijsten", "/lijsten-beheren"],
     noAnimation: true,
     component: (args) => <MainPages {...args} />,
-    promise: ({ path }) => async () => {
-      await promises.Home();
-      await promises.ManageLists();
-      await promises.MyLists();
-    },
+    promise: () => promises.MainPages,
     exact: true
   },
   {

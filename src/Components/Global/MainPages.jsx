@@ -3,17 +3,10 @@ import Navbar from './Navbar';
 import { ScrollMenu, VisibilityContext } from 'react-horizontal-scrolling-menu';
 import { useContext, useRef, useEffect, lazy } from 'react';
 import { useLocation, useHistory } from "react-router-dom";
+import Home from "../../Pages/Home"
+import MyLists from "../../Pages/MyLists"
+import ManageLists from "../../Pages/ManageLists"
 
-export const pagePromises = {
-    Home: () => import('../../Pages/Home'),
-    ManageLists: () => import('../../Pages/ManageLists'),
-    MyLists: () => import('../../Pages/MyLists'),
-} 
-
-
-const ManageLists = lazy(pagePromises.ManageLists);
-const Home = lazy(pagePromises.Home);
-const MyLists = lazy(pagePromises.MyLists);
 
 const localPages = {
     "/mijn-lijsten": 0,
