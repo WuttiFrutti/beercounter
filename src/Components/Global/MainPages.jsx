@@ -58,9 +58,7 @@ const localPages = {
         handleGesture()
       })
   
-      setTimeout(() => {
         el.scrollLeft = el.clientWidth * localPages[match.path];
-      })
   
       return () => {
         el.removeEventListener("touchstart", startListener);
