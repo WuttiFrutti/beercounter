@@ -16,16 +16,14 @@ const buttonMap = [
 ]
 
 const BottomNavigator = () => {
-    const location = useLocation();
-    const history = useHistory();
     const [state, setState] = useState(1);
     const visibility = useContext(VisibilityContext);
 
 
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-        setState(buttonMap.findIndex(s => s === location.pathname));
-    },[setState,location])
+        const [visible] = visibility.visibleItemsWithoutSeparators;
+        setState(parseInt(visible));
+    },[setState,visibility])
 
 
     return <BottomNavigation
@@ -40,7 +38,8 @@ const BottomNavigator = () => {
         showLabels
         value={state}
         onChange={(e, val) => {
-                visibility.scrollToItem(visibility.getItemByIndex(val));
+            setState(val)
+            visibility.scrollToItem(visibility.getItemByIndex(val));
         }}
     >
         <BottomNavigationAction label="Mijn lijsten" icon={<ListIcon />} />
