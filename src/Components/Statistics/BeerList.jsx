@@ -52,7 +52,7 @@ const BeerListItem = ({ user, listId, toggle, isOpen, index, highest, price }) =
     return <>
         <ListItemButton onClick={() => toggle(index)} alignItems="flex-start">
             <ListItemAvatar sx={{ minWidth: 0, marginRight: "1em" }}>
-                {user.total >= highest ? <FontAwesomeIcon size="lg" icon={faCrown} style={{ color: "gold", position: "relative", left: "50%", transform: "translate(-50%,30%)", zIndex: 1 }} /> : null}
+                {user.total <= 0 ? null : user.total >= highest ? <FontAwesomeIcon size="lg" icon={faCrown} style={{ color: "gold", position: "relative", left: "50%", transform: "translate(-50%,30%)", zIndex: 1 }} /> : null}
                 <Avatar alt={user.user.username} src="/static/images/avatar/1.jpg" />
             </ListItemAvatar>
             <ListItemText

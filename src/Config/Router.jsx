@@ -1,13 +1,10 @@
-import { Switch, Route, useLocation, useHistory, useParams } from "react-router-dom";
+import { Switch, Route, useLocation, useHistory } from "react-router-dom";
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import { cloneElement, useCallback } from 'react';
+import { cloneElement } from 'react';
 import { MainStore } from './MainStore';
 import React from "react";
 import LoginSwitch from './../Pages/LoggedOut/LoginSwitch';
-import BottomNavigator from './../Components/Global/BottomNavigator';
-import Navbar from '../Components/Global/Navbar';
 import { joinList } from './Axios';
-
 
 
 import Page from '../Pages/Page';
@@ -15,23 +12,21 @@ import Wait from './../Pages/Wait';
 import styled from "styled-components";
 import { useTheme } from '@mui/system';
 import { matchPath } from "react-router-dom/cjs/react-router-dom.min";
+import MainPages, { pagePromises } from './../Components/Global/MainPages';
 
 const promises = {
-  Home: () => import('./../Pages/Home'),
   NotFound: () => import('./../Pages/404'),
-  ManageLists: () => import('./../Pages/ManageLists'),
-  MyLists: () => import('./../Pages/MyLists'),
   SingleList: () => import('./../Pages/SingleList'),
+  ...pagePromises
 }
+
 
 
 const NotFound = React.lazy(promises.NotFound);
 const SingleList = React.lazy(promises.SingleList);
 
 
-const ManageLists = React.lazy(promises.ManageLists);
-const Home = React.lazy(promises.Home);
-const MyLists = React.lazy(promises.MyLists);
+
 
 
 const BackgroundTransition = styled(TransitionGroup)(({ style, sx, darkMode }) => {
@@ -47,63 +42,6 @@ const BackgroundTransition = styled(TransitionGroup)(({ style, sx, darkMode }) =
   }
 });
 
-
-const localPages = {
-  "/mijn-lijsten": 0,
-  "/": 1,
-  "/lijsten-beheren": 2
-}
-
-const map = (value, x1, y1, x2, y2) => (value - x1) * (y2 - x2) / (y1 - x1) + x2;
-
-const MainPages = ({ options, match }) => {
-  const history = useHistory();
-
-  const scroll = useCallback(() => {
-    const el = document.querySelector(".transition-div-child");
-    el.scrollLeft = localPages[match.path] * (el.scrollWidth / 3);
-
-  }, [match])
-
-  React.useEffect(() => {
-    scroll();
-  }, [scroll])
-
-  React.useEffect(() => {
-    let eventListener = null;
-    let el = null;
-    setTimeout(() => {
-      el = document.querySelector(".transition-div-child");
-      el.style.scrollBehavior = "unset"
-      scroll();
-      el.style.scrollBehavior = "smooth"
-      let currLoc = match.path
-      eventListener = el.addEventListener('touchend', () => {
-        setTimeout(() => {
-          const newPath = Object.keys(localPages)[Math.floor(map(el.scrollLeft + (window.document.body.scrollWidth / 2), 0, el.scrollWidth, 0, 3))]
-          console.log("yeet", newPath, el.scrollLeft + (window.document.body.scrollWidth / 2), currLoc)
-          if(currLoc !== newPath){
-            currLoc = newPath;
-            history.push(newPath)
-          }
-        }, 500)
-      }, false);
-    }, 1);
-    return () => {
-      el.removeEventListener("touchend", eventListener)
-    }
-  }, [])
-
-  return <>
-    <Navbar />
-    <div className="swap-page-wrapper-wrapper">
-      <div className="swap-page-wrapper"><MyLists /></div>
-      <div className="swap-page-wrapper"><Home /></div>
-      <div className="swap-page-wrapper"><ManageLists /></div>
-    </div>
-    <BottomNavigator />
-  </>
-}
 
 const paths = [
   {
@@ -131,7 +69,7 @@ const paths = [
         MainStore.update(s => ({ ...s, snack: { open: true, severity: "info", children: <>Je doet nu mee aan de lijst!</> } }));
         return Promise.resolve();
       }).catch((e) => {
-        console.log(e);
+
         history.push("/");
         return Promise.reject()
       });
