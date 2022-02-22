@@ -5,6 +5,9 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useState, useEffect } from "react";
 import { List as ListIcon} from '@mui/icons-material';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { useContext } from 'react';
+import { ScrollMenu, VisibilityContext } from 'react-horizontal-scrolling-menu';
+
 
 const buttonMap = [
     "/mijn-lijsten",
@@ -15,7 +18,9 @@ const buttonMap = [
 const BottomNavigator = () => {
     const location = useLocation();
     const history = useHistory();
-    const [state, setState] = useState(1)
+    const [state, setState] = useState(1);
+    const visibility = useContext(VisibilityContext);
+
 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -30,14 +35,12 @@ const BottomNavigator = () => {
             bottom: "0",
             zIndex:"10",
             boxShadow:"#285a84 0px 0px 2px",
+            left: "0"
         }}
         showLabels
         value={state}
         onChange={(e, val) => {
-            if (val !== state) {
-                setState(val);
-                history.push(buttonMap[val], { animation: !buttonMap.includes(location.pathname) ? "swap-left" : false, subAnimation: val > state ? "swap-left" : "swap-right" })
-            }
+                visibility.scrollToItem(visibility.getItemByIndex(val));
         }}
     >
         <BottomNavigationAction label="Mijn lijsten" icon={<ListIcon />} />
