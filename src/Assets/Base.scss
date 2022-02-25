@@ -43,6 +43,11 @@ text {
   height: 100vh;
   overflow-y: scroll;
   scroll-snap-align: center;
+  -ms-overflow-style: none; /* for Internet Explorer, Edge */
+  scrollbar-width: none;
+  &::-webkit-scrollbar{
+    display: none;
+  }
   > * {
     padding-top: 3em;
     padding-bottom: 3em;
