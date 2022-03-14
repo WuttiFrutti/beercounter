@@ -9,6 +9,7 @@ import { Share, ExpandLess, ExpandMore, NotificationImportant as Notify } from '
 import { useState, Fragment } from "react";
 import Graph from '../Components/Statistics/Graph';
 import { notifyList } from "../Config/Axios";
+import EditList from './../Components/Global/EditList';
 
 const ManageLists = () => {
     const lists = MainStore.useState(s => s.lists);
@@ -77,6 +78,7 @@ const ManageLists = () => {
 
 const ManageListItemGraph = ({ listId }) => {
     const drinks = MainStore.useState(getDrinks(listId));
+    const [editOpen, setEditOpen] = useState(false);
 
     return <>
         <Graph data={drinks} ></Graph>
@@ -89,9 +91,10 @@ const ManageListItemGraph = ({ listId }) => {
         <ButtonGroup variant="contained" aria-label="outlined primary button group">
             <Button>Beëindigen</Button>
             <Button>Verwijderen</Button>
-            <Button>Aanpassen</Button>
+            <Button onClick={() => setEditOpen(true)} >Aanpassen</Button>
         </ButtonGroup>
         </Stack>
+        <EditList open={editOpen} setOpen={setEditOpen} />
     </>
 }
 
