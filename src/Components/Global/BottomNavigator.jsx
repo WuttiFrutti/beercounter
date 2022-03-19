@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { List as ListIcon} from '@mui/icons-material';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import { useContext } from 'react';
-import { ScrollMenu, VisibilityContext } from 'react-horizontal-scrolling-menu';
+import { VisibilityContext } from 'react-horizontal-scrolling-menu';
 
 
 const buttonMap = [

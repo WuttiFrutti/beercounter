@@ -1,7 +1,7 @@
 import BottomNavigator from './BottomNavigator';
 import Navbar from './Navbar';
 import { ScrollMenu, VisibilityContext } from 'react-horizontal-scrolling-menu';
-import { useContext, useRef, useEffect, lazy } from 'react';
+import { useContext, useRef, useEffect } from 'react';
 import { useLocation, useHistory } from "react-router-dom";
 import Home from "../../Pages/Home"
 import MyLists from "../../Pages/MyLists"
@@ -58,7 +58,7 @@ const localPages = {
         handleGesture()
       })
   
-        el.scrollLeft = el.clientWidth * localPages[match.path];
+      el.scrollLeft = el.clientWidth * localPages[match.path];
   
       return () => {
         el.removeEventListener("touchstart", startListener);
