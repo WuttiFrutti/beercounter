@@ -3,7 +3,6 @@ import { setCookie, getCookie } from 'react-use-cookie';
 import { retrieveDrinksForListUser, retrieveDrinksForList } from './Axios';
 
 export const defaultState = {
-    snack: {},
     user: false,
     lists: [],
     ended:[],

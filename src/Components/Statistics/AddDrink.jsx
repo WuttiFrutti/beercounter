@@ -6,10 +6,10 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import { addDrink, undoDrink } from './../../Config/Axios';
-import { getDrinks, MainStore } from './../../Config/MainStore';
+import { addDrink, removeDrink } from './../../Config/Axios';
 import { Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
+import { closeSnack, openSnack } from './../../Config/UIStore';
 
 const AddDrink = ({ listId, listname }) => {
     const [amount, setAmount] = React.useState(1);
@@ -23,14 +23,11 @@ const AddDrink = ({ listId, listname }) => {
         return arr;
     }
 
-    const closeSnack = () => {
-        MainStore.update(s => { s.snack.open = false });
-    }
 
     const undo = (data) => {
         closeSnack();
         setSending(true);
-        undoDrink(listId, data._id).then(() => {
+        removeDrink(listId, data).then(() => {
             setSending(false);
         }).catch(() => {
             setSending(false);
@@ -42,8 +39,8 @@ const AddDrink = ({ listId, listname }) => {
         e.preventDefault()
         setSending(true);
         addDrink(listId, amount).then((data) => {
-            MainStore.update(s => { 
-                s.snack = { open:true, autohide:5000, isAlert:false, args:{ message:`${amount} drankjes toegevoegd aan ${listname}.`, action:<Action close={closeSnack} undo={() => undo(data)} /> }, children:null }
+            openSnack(null, null, { 
+                autohide:5000, isAlert:false, args:{ message:`${amount} drankjes toegevoegd aan ${listname}.`, action:<Action close={closeSnack} undo={() => undo(data)} /> }
             });
             setSending(false);
         }).catch(() => {

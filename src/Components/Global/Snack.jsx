@@ -1,22 +1,20 @@
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 import { forwardRef } from 'react';
-import { MainStore } from './../../Config/MainStore';
+import { closeSnack, UIStore } from './../../Config/UIStore';
 
 const Alert = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
 const Snack = () => {
-  const { open, autohide = 2000, children, onClose = () => { }, isAlert = true, args = {}, severity } = MainStore.useState(s => s.snack);
+  const { open, autohide = 2000, children, onClose = () => { }, isAlert = true, args = {}, severity } = UIStore.useState(s => s.snack);
 
   const handleClose = (_, reason) => {
     if (reason === 'clickaway') {
       return;
     }
-    MainStore.update(s => {
-      s.snack.open = false;
-    });
+    closeSnack();
     onClose();
   };
 

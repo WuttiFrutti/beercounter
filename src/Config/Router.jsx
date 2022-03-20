@@ -12,11 +12,13 @@ import Wait from './../Pages/Wait';
 import styled from "styled-components";
 import { useTheme } from '@mui/system';
 import { matchPath } from "react-router-dom/cjs/react-router-dom.min";
+import { openSnack } from "./UIStore";
 
 const promises = {
   NotFound: () => import('./../Pages/404'),
   SingleList: () => import('./../Pages/SingleList'),
   MainPages: () => import('./../Components/Global/MainPages'),
+  Profile: () => import('./../Pages/Profile.jsx'),
 }
 
 
@@ -24,6 +26,8 @@ const promises = {
 const NotFound = React.lazy(promises.NotFound);
 const SingleList = React.lazy(promises.SingleList);
 const MainPages = React.lazy(promises.MainPages);
+const Profile = React.lazy(promises.Profile);
+
 
 
 
@@ -63,7 +67,7 @@ const paths = [
     promise: ({ params }, history) => {
       return joinList(params.shareId).then(() => {
         history.push("/");
-        MainStore.update(s => ({ ...s, snack: { open: true, severity: "info", children: <>Je doet nu mee aan de lijst!</> } }));
+        openSnack(<>Je doet nu mee aan de lijst!</>, "info");
         return Promise.resolve();
       }).catch((e) => {
 
@@ -71,6 +75,11 @@ const paths = [
         return Promise.reject()
       });
     }
+  },
+  {
+    path: "/profiel",
+    component: () => <Profile />,
+    promise: () => promises.Profile
   },
   {
     path: "*",

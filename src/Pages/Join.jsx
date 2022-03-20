@@ -4,6 +4,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import { useEffect } from "react";
 import { MainStore } from './../Config/MainStore';
 import { joinList } from "../Config/Axios";
+import { openSnack } from "../Config/UIStore";
 
 
 const Join = () => {
@@ -12,8 +13,8 @@ const Join = () => {
 
     useEffect(() => {
         joinList(params.shareId).then(() => {
-            history.push("/")
-            MainStore.update(s => ({ ...s ,snack:{ open:true, severity:"info", children:<>Je doet nu mee aan de lijst!</> }  }));
+            history.push("/");
+            openSnack(<>Je doet nu mee aan de lijst!</>,"info")
         }).catch(() => {
             history.push("/")
         });
