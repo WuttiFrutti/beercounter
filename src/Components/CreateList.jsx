@@ -8,6 +8,7 @@ import { LoadingButton } from '@mui/lab';
 import { createList } from './../Config/Axios';
 import { AxiosError } from './../Config/Helpers';
 import { MainStore } from "../Config/MainStore";
+import { openSnack } from "../Config/UIStore";
 
 const defaultFormState = {
     join: true,
@@ -59,13 +60,7 @@ const CreateList = () => {
             setSending(false);
             setOpen(false);
             setFormState(defaultFormState);
-            MainStore.update(s => {
-                s.snack = s.snack = {
-                    open: true,
-                    severity: "info",
-                    children: <>Lijst aangemaakt!</>
-                }
-            })
+            openSnack(<>Lijst aangemaakt!</>,"info");
         }).catch((e) => {
             setSending(false)
             if (e instanceof AxiosError) {

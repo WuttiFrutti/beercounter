@@ -70,6 +70,10 @@ const Navbar = () => {
                     >
                         <MenuItem onClick={() => {
                             handleClose();
+                            history.push("/profiel", { animation: "swap-left" })
+                        }}>Profiel</MenuItem>
+                        <MenuItem onClick={() => {
+                            handleClose();
                             logout(history);
                         }}>Uitloggen</MenuItem>
                     </Menu>

@@ -191,20 +191,20 @@ routes.post("/list/drink", async (req, res) => {
 })
 
 routes.delete("/list/drink", async (req, res) => {
-  const drink = await Drink.findOne({ _id: req.body.id, user: res.locals.user._id });
+  const drink = await Drink.findOne({ _id: req.body.id, $or: [{ user: res.locals.user._id }, { owner: res.locals.user._id}] }).populate("user");
   const list = await List.findOne({ _id: drink.list });
 
-  const user = list.users.find(u => u.user.toString() === res.locals.user._id.toString());
+  const user = list.users.find(u => u.user.toString() === drink.user._id.toString());
   const index = user.drinks.findIndex(d => d._id.toString() === req.body.drinkId);
   user.drinks.splice(index, 1);
 
   user.total -= drink.amount;
   list.total -= drink.amount;
-  res.locals.user.total -= drink.amount;
+  drink.user.total -= drink.amount;
 
   await list.save();
   await drink.remove();
-  await res.locals.user.save();
+  await drink.user.save();
 
 
   res.status(200).send();

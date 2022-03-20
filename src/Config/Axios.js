@@ -3,11 +3,12 @@ import { MainStore, defaultState } from './MainStore';
 import { AxiosError } from './Helpers';
 import { setCookie, getCookie } from 'react-use-cookie';
 import { notificationPermissions } from "./Firebase";
+import { openSnack } from "./UIStore";
 
 const axios = _axios.create({ baseURL:process.env.REACT_APP_BASE_URL, withCredentials: true })
 
 const defaultHandler = (message = "Er is iets mis gegaan!") => {
-    MainStore.update(s => ({ ...s,snack:{ open:true, severity:"error", children:<>{message}</> }  }));
+    openSnack(<>{message}</>);
     throw Error(message);
 }
 
@@ -132,10 +133,10 @@ export const joinList = async (shareId) => {
 
 
 
-export const addDrink = async (listId, amount) => {
+export const addDrink = async (listId, amount, user = false) => {
     try{
-        const { data } = await axios.post("list/drink",{ id: listId, amount:amount });
-        await retrieveDrinksForListUser(listId, MainStore.currentState.user._id);
+        const { data } = await axios.post("list/drink",{ id: listId, amount:amount, user:user });
+        await retrieveDrinksForListUser(listId, user || MainStore.currentState.user._id);
         await retrieveLists();
         return data;
     }catch(e){
@@ -143,10 +144,10 @@ export const addDrink = async (listId, amount) => {
     }
 }
 
-export const undoDrink = async (listId, drinkId) => {
+export const removeDrink = async (listId, drink) => {
     try{
-        await axios.delete("list/drink",{ data:{ id:drinkId } });
-        await retrieveDrinksForListUser(listId, MainStore.currentState.user._id);
+        await axios.delete("list/drink",{ data:{ id:drink._id } });
+        await retrieveDrinksForListUser(listId, drink.user);
         await retrieveLists();
     }catch(e){
         defaultHandler();
@@ -222,6 +223,22 @@ export const createList = async (name, price, join, users) => {
 export const notifyList = async (listId) => {
     try{
         await axios.post(`/list/notify`, { id:listId });
+    }catch(e){
+        defaultHandler();
+    }
+}
+
+export const endList = async (listId) => {
+    try{
+        throw new Error();
+    }catch(e){
+        defaultHandler();
+    }
+}
+
+export const removeList = async (listId) => {
+    try{
+        throw new Error();
     }catch(e){
         defaultHandler();
     }

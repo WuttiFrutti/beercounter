@@ -5,11 +5,14 @@ import CreateList from '../Components/CreateList';
 import IconButton from '@mui/material/IconButton';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { Share, ExpandLess, ExpandMore, NotificationImportant as Notify } from '@mui/icons-material';
+import { Share, ExpandLess, ExpandMore, NotificationImportant as Notify, Edit } from '@mui/icons-material';
 import { useState, Fragment } from "react";
 import Graph from '../Components/Statistics/Graph';
-import { notifyList } from "../Config/Axios";
+import { notifyList, removeList } from "../Config/Axios";
 import EditList from './../Components/Global/EditList';
+import { openDrawer, openModal } from './../Config/UIStore';
+import ConfirmationModal from './../Components/Global/ConfirmationModal';
+import { endList } from './../Config/Axios';
 
 const ManageLists = () => {
     const lists = MainStore.useState(s => s.lists);
@@ -37,6 +40,8 @@ const ManageLists = () => {
         navigator.share(data)
     }
 
+    const openNotificationModal = (id) => openModal(<ConfirmationModal text="Weet je zeker dat je iedereen een notificatie wil sturen?" confirmAction={() => notifyList(id)} />, "Notificatie")
+
     return <Container sx={{ marginTop: "2em" }} maxWidth="sm">
         <Card sx={{ marginBottom: "2em" }}>
             <CardContent>
@@ -55,7 +60,10 @@ const ManageLists = () => {
                             primary={list.name}
                             secondary={`Totaal: ${list.total}`}
                         />
-                        <IconButton onClick={() => notifyList(list._id)} edge="end" sx={{ marginRight: "0.1em" }} aria-label="notify">
+                        <IconButton onClick={() => openDrawer(<EditList listId={list._id} />)} edge="end" sx={{ marginRight: "0.1em" }} aria-label="edit">
+                            <Edit />
+                        </IconButton>
+                        <IconButton onClick={() => openNotificationModal(list._id)} edge="end" sx={{ marginRight: "0.1em" }} aria-label="notify">
                             <Notify />
                         </IconButton>
                         <IconButton onClick={() => share(list.shareId)} edge="end" sx={{ marginRight: "0.1em" }} aria-label="share">
@@ -78,25 +86,26 @@ const ManageLists = () => {
 
 const ManageListItemGraph = ({ listId }) => {
     const drinks = MainStore.useState(getDrinks(listId));
-    const [editOpen, setEditOpen] = useState(false);
+
+    
+    const openEnd = () => openModal(<ConfirmationModal text="Weet je zeker dat je deze lijst wilt beëindigen?" confirmAction={endList} />, "Bevestigen")
+    
+    const openRemove = () => openModal(<ConfirmationModal text="Weet je zeker dat je deze lijst wilt verwijderen?" confirmAction={removeList} />, "Bevestigen")
 
     return <>
         <Graph data={drinks} ></Graph>
-        <Stack 
+        <Stack
             spacing={2}
             justifyContent="center"
             alignItems="center"
             direction="row"
         >
-        <ButtonGroup variant="contained" aria-label="outlined primary button group">
-            <Button>Beëindigen</Button>
-            <Button>Verwijderen</Button>
-            <Button onClick={() => setEditOpen(true)} >Aanpassen</Button>
-        </ButtonGroup>
+            <ButtonGroup variant="contained" aria-label="outlined primary button group">
+                <Button onClick={openEnd}>Beëindigen</Button>
+                <Button onClick={openRemove}>Verwijderen</Button>
+            </ButtonGroup>
         </Stack>
-        <EditList open={editOpen} setOpen={setEditOpen} />
     </>
 }
-
 
 export default ManageLists;
