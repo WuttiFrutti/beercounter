@@ -14,13 +14,16 @@ const Loading = styled(Box)({
 const PreLoading = ({ swap, setLoaded, promise }) => {
 
 
+
+
   useEffect(() => {
     if (swap) {
       checkLogin().then((res) => {
-          Promise.resolve(promise()).then(() => {
-            setLoaded(true)
-            if (!res) swap("login", "swap-right");
-          })
+        const p = promise();
+        p.then((args) => {
+          setLoaded(true)
+          if (!res) swap("login", "swap-right");
+        })
       });
     }
   }, [swap, promise, setLoaded])

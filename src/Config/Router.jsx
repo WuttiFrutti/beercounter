@@ -17,7 +17,7 @@ import { openSnack } from "./UIStore";
 const promises = {
   NotFound: () => import('./../Pages/404'),
   SingleList: () => import('./../Pages/SingleList'),
-  MainPages: () => import('./../Components/Global/MainPages'),
+  MainPages: () => import('./../Components/Global/MainPages.jsx'),
   Profile: () => import('./../Pages/Profile.jsx'),
 }
 
@@ -59,12 +59,12 @@ const paths = [
     component: () => { },
     promise: ({ params }, history) => {
       return joinList(params.shareId).then(() => {
-        history.push("/");
+        history.push("/home");
         openSnack(<>Je doet nu mee aan de lijst!</>, "info");
         return Promise.resolve();
       }).catch((e) => {
 
-        history.push("/");
+        history.push("/home");
         return Promise.reject()
       });
     }
@@ -82,8 +82,7 @@ const paths = [
   },
   {
     path: "/",
-    noAnimation: true,
-    component: (args) => <MainPages {...args} />,
+    component: () => <></>,
     promise: (_, history) => history.push("/home"),
   },
   {
@@ -103,6 +102,7 @@ const Router = () => {
 
   const options = paths.find(options => matchPath(location.pathname, { path: options.path, exact: options.exact }));
   const match = matchPath(location.pathname, { path: options.path, exact: options.exact });
+
 
   const route = loaded && user ? (
     <Wait>

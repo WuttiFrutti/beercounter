@@ -22,10 +22,8 @@ export const notificationPermissions = async () => {
         const messaging = getMessaging(app);
         await Notification.requestPermission();
         const token = await getToken(messaging);
-        console.log("Token requested:", token);
 
         messaging.onMessageHandler = function(payload) {
-            console.log("Received foreground message ", payload);
             const { data, body, actions } = payload.data;
           
             const notificationOptions = {
