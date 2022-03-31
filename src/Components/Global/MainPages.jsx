@@ -41,7 +41,7 @@ const MainPages = () => {
   const swipe = ({ dir }) => {
     const path = paths[dir === "Left" ? id + 1 : id - 1];
     if (path) {
-      history.push(path.path);
+      history.replace(path.path);
     }
   }
 
@@ -54,7 +54,7 @@ const MainPages = () => {
   return <>
     <Navbar />
     <div {...handlers}>
-      <ScrollMenu apiRef={ref} transitionDuration={id === undefined ? 0 : 200}>
+      <ScrollMenu apiRef={ref} transitionDuration={id === undefined ? 0 : 500}>
         <SubPage key={0} itemId={0}><MyLists /></SubPage>
         <SubPage key={1} itemId={1}><Home /></SubPage>
         <SubPage key={2} itemId={2}><ManageLists /></SubPage>

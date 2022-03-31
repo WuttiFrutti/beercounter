@@ -21,8 +21,8 @@ const BottomNavigator = ({ state, paths }) => {
         showLabels
         value={state}
         onChange={(e, val) => {
-            if(val !== state){
-                history.push(paths[val].path);
+            if (val !== state) {
+                history.replace(paths[val].path);
             }
         }}
     >
