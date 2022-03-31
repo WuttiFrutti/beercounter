@@ -83,7 +83,7 @@ const paths = [
   {
     path: "/",
     component: () => <></>,
-    promise: (_, history) => history.push("/home"),
+    promise: (_, history) => history.replace("/home"),
   },
   {
     path: "*",
