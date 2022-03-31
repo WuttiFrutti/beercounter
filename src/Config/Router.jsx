@@ -50,13 +50,6 @@ const BackgroundTransition = styled(TransitionGroup)(({ style, sx, darkMode }) =
 
 const paths = [
   {
-    path: ["/", "/mijn-lijsten", "/lijsten-beheren"],
-    noAnimation: true,
-    component: (args) => <MainPages {...args} />,
-    promise: () => promises.MainPages,
-    exact: true
-  },
-  {
     path: "/lijst/:list",
     component: () => <SingleList />,
     promise: () => promises.SingleList
@@ -80,6 +73,18 @@ const paths = [
     path: "/profiel",
     component: () => <Profile />,
     promise: () => promises.Profile
+  },
+  {
+    path: "/home",
+    noAnimation: true,
+    component: (args) => <MainPages {...args} />,
+    promise: () => promises.MainPages,
+  },
+  {
+    path: "/",
+    noAnimation: true,
+    component: (args) => <MainPages {...args} />,
+    promise: (_, history) => history.push("/home"),
   },
   {
     path: "*",

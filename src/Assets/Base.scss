@@ -15,6 +15,7 @@ body {
     overflow-x: hidden;
     > div {
       overflow-y: auto;
+      overflow-x: hidden;
     }
   }
   .child-transition-div {
@@ -44,7 +45,7 @@ text {
   scroll-snap-align: center;
   -ms-overflow-style: none; /* for Internet Explorer, Edge */
   scrollbar-width: none;
-  &::-webkit-scrollbar{
+  &::-webkit-scrollbar {
     display: none;
   }
   > * {
@@ -53,10 +54,10 @@ text {
   }
 }
 
-.react-horizontal-scrolling-menu--scroll-container{
-    height: 100vh;
-    overflow-x: hidden;
-    // scroll-snap-type: x mandatory;
+.react-horizontal-scrolling-menu--scroll-container {
+  height: 100vh;
+  overflow-x: hidden;
+  // scroll-snap-type: x mandatory;
 }
 
 .swap-left-enter {
@@ -100,5 +101,16 @@ text {
         transform: translate(0, 25px);
       }
     }
+  }
+}
+
+.horizontal-scroll-pages {
+  width: 100vw;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  height: 100vh;
+  .overflow-page {
+    width: 300vw;
+    display: flex;
   }
 }

@@ -20,7 +20,7 @@ const IconPage = ({ children }) => {
     return <>
         <Container maxWidth="sm">
             <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "Center" }}>
-                <Logo width="100%" height="100%" src="/assets/logo.svg" alt="Chef Bier"/>
+                <Logo width="100%" height="100%" src="/assets/logo.svg" alt="Chef Bier" />
             </Box>
         </Container>
         <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "Center" }}>
