@@ -33,7 +33,7 @@ const MainPages = () => {
   }, [location])
 
   useEffect(() => {
-    ref.current.style.left = "-" + document.body.clientWidth * id + "px";
+    ref.current.style.transform = `translate(-${id * 33}%)`;
   }, [id, ref]);
 
   const swipe = ({ dir }) => {
