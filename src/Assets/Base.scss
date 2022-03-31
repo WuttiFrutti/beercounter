@@ -54,12 +54,6 @@ text {
   }
 }
 
-.react-horizontal-scrolling-menu--scroll-container {
-  height: 100vh;
-  overflow-x: hidden;
-  // scroll-snap-type: x mandatory;
-}
-
 .swap-left-enter {
   transform: translate(100%, 0);
   &.swap-left-enter-active {
@@ -104,13 +98,10 @@ text {
   }
 }
 
-.horizontal-scroll-pages {
-  width: 100vw;
-  overflow-x: scroll;
-  overflow-y: hidden;
-  height: 100vh;
-  .overflow-page {
-    width: 300vw;
-    display: flex;
-  }
+.overflow-page {
+  width: 300vw;
+  position: relative;
+  display: flex;
+  overflow-x: visible;
+  transition: 250ms ease-out;
 }

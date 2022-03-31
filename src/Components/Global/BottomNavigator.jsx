@@ -4,8 +4,10 @@ import HomeIcon from '@mui/icons-material/Home';
 import { useState, useEffect } from "react";
 import { List as ListIcon } from '@mui/icons-material';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
+import { useHistory } from 'react-router-dom';
 
 const BottomNavigator = ({ state, paths }) => {
+    const history = useHistory();
 
     return <BottomNavigation
         sx={{
@@ -19,7 +21,9 @@ const BottomNavigator = ({ state, paths }) => {
         showLabels
         value={state}
         onChange={(e, val) => {
-
+            if(val !== state){
+                history.push(paths[val].path);
+            }
         }}
     >
         <BottomNavigationAction label="Mijn lijsten" icon={<ListIcon />} />

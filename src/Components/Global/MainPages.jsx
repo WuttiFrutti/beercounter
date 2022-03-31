@@ -7,6 +7,8 @@ import ManageLists from "../../Pages/ManageLists"
 import { Switch, useLocation } from 'react-router-dom';
 import { matchPath } from "react-router-dom/cjs/react-router-dom.min";
 import { useState } from 'react';
+import { useSwipeable } from 'react-swipeable';
+import { useHistory } from 'react-router-dom';
 
 const paths = [{
   path: "/home/mijn-lijsten",
@@ -23,31 +25,41 @@ const MainPages = () => {
   const ref = useRef();
   const location = useLocation();
   const [id, setId] = useState();
-
-  const onScroll = (e) => {
-    console.log(e);
-    e.stopPropegation();
-  }
+  const history = useHistory();
 
   useEffect(() => {
-    setId(paths.find(options => matchPath(location.pathname, { path: options.path })));
+    const { id } = paths.find(options => matchPath(location.pathname, { path: options.path, exact: true }));
+    setId(id);
   }, [location])
 
   useEffect(() => {
-    ref.current.scrollLeft = document.body.clientWidth * id;
-  }, [id])
+    ref.current.style.left = "-" + document.body.clientWidth * id + "px";
+  }, [id, ref]);
+
+  const swipe = ({ dir }) => {
+    const path = paths[dir === "Left" ? id + 1 : id - 1];
+    if (path) {
+      history.push(path.path);
+    }
+  }
+
+  const handlers = useSwipeable({
+    onSwipedLeft: swipe,
+    onSwipedRight: swipe
+  });
 
 
   return <>
     <Navbar />
-    <div ref={ref} className="horizontal-scroll-pages" onScroll={onScroll}>
-      <div className='overflow-page'>
+    <div {...handlers}>
+      <div ref={ref} className="overflow-page">
         <SubPage key={"0"} itemId={"0"}><MyLists /></SubPage>
         <SubPage key={"1"} itemId={"1"}><Home /></SubPage>
         <SubPage key={"2"} itemId={"2"}><ManageLists /></SubPage>
       </div>
     </div>
-    <BottomNavigator state={id} />
+
+    <BottomNavigator state={id} paths={paths} />
   </>
 }
 
