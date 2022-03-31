@@ -57,7 +57,7 @@ const EditUser = ({ user, listId }) => {
 
     const drinkList = drinks?.map(d => <ListItem key={d._id}>
         <ListItemIcon>
-        <FontAwesomeIcon  size="2xl" icon={faBeerMugEmpty} />
+            <FontAwesomeIcon size="2xl" icon={faBeerMugEmpty} />
         </ListItemIcon>
         <ListItemText primary={moment(d.updatedAt).format('hh:mm D/M/YYYY')} secondary={`Aantal: ${d.amount}`} />
         <IconButton onClick={() => openRemoveModal(d)} edge="end">
@@ -70,22 +70,22 @@ const EditUser = ({ user, listId }) => {
     )
 
     return <DrawerList header={user.user.username}>
-        {drinks?.length > 0 ? 
-        <>
-            {drinkList}
-        </> : 
-        <>
-            <Box sx={{p:4}}>
-                <Typography variant="h6" component="h2">
-                    Er is geen data gevonden.
-                </Typography>
-            </Box>
-        </>}
+        {drinks?.length > 0 ?
+            <>
+                {drinkList}
+            </> :
+            <>
+                <Box sx={{ p: 4 }}>
+                    <Typography variant="h6" component="h2">
+                        Er is geen data gevonden.
+                    </Typography>
+                </Box>
+            </>}
         <ListItemButton onClick={openCreateModal}>
-                <ListItemText primary="Nieuw item aanmaken" />
-                <IconButton edge="end">
-                    <Add />
-                </IconButton>
+            <ListItemText primary="Nieuw item aanmaken" />
+            <IconButton edge="end">
+                <Add />
+            </IconButton>
         </ListItemButton>
     </DrawerList>
 }

@@ -16,11 +16,11 @@ const containerStyle = {
 
 const cardStyle = {
     minHeight: "100px",
-    p:4
+    p: 4
 };
 
 const Modal = () => {
-    const { open, children, title } = UIStore.useState(s => s.modal);
+    const { open = false, children, title } = UIStore.useState(s => s.modal);
 
 
     const handleClose = (_, reason) => {

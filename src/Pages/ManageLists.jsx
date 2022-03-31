@@ -87,9 +87,9 @@ const ManageLists = () => {
 const ManageListItemGraph = ({ listId }) => {
     const drinks = MainStore.useState(getDrinks(listId));
 
-    
+
     const openEnd = () => openModal(<ConfirmationModal text="Weet je zeker dat je deze lijst wilt beëindigen?" confirmAction={endList} />, "Bevestigen")
-    
+
     const openRemove = () => openModal(<ConfirmationModal text="Weet je zeker dat je deze lijst wilt verwijderen?" confirmAction={removeList} />, "Bevestigen")
 
     return <>

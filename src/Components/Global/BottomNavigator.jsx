@@ -1,45 +1,29 @@
 import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import HomeIcon from '@mui/icons-material/Home';
-import { useLocation, useHistory } from 'react-router-dom';
 import { useState, useEffect } from "react";
-import { List as ListIcon} from '@mui/icons-material';
+import { List as ListIcon } from '@mui/icons-material';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
-import { useContext } from 'react';
-import { VisibilityContext } from 'react-horizontal-scrolling-menu';
+import { useHistory } from 'react-router-dom';
 
-
-const buttonMap = [
-    "/mijn-lijsten",
-    "/",
-    "/lijsten-beheren"
-]
-
-const BottomNavigator = () => {
-    const [state, setState] = useState(1);
-    const visibility = useContext(VisibilityContext);
-
-
-    useEffect(() => {
-        const [visible] = visibility.visibleItemsWithoutSeparators;
-        setState(parseInt(visible));
-    },[setState,visibility])
-
+const BottomNavigator = ({ state, paths }) => {
+    const history = useHistory();
 
     return <BottomNavigation
         sx={{
             position: "fixed",
             width: "100vw",
             bottom: "0",
-            zIndex:"10",
-            boxShadow:"#285a84 0px 0px 2px",
+            zIndex: "10",
+            boxShadow: "#285a84 0px 0px 2px",
             left: "0"
         }}
         showLabels
         value={state}
         onChange={(e, val) => {
-            setState(val)
-            visibility.scrollToItem(visibility.getItemByIndex(val));
+            if(val !== state){
+                history.push(paths[val].path);
+            }
         }}
     >
         <BottomNavigationAction label="Mijn lijsten" icon={<ListIcon />} />
