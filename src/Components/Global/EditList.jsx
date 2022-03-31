@@ -1,11 +1,11 @@
 import { Add, Close, Edit } from "@mui/icons-material";
-import { Modal, Box, Typography, Drawer, List, ListItem, ListItemText, ListSubheader, IconButton, ListItemButton, ListItemIcon } from "@mui/material";
+import { Box, Typography, ListItem, ListItemText, IconButton, ListItemButton, ListItemIcon } from "@mui/material";
 import { fillListUser } from "../../Config/Helpers";
 import { getDrinks, MainStore } from "../../Config/MainStore";
-import HashDrawer, { DrawerList } from './HashDrawer';
-import { closeDrawer, openDrawer, openModal } from './../../Config/UIStore';
+import { DrawerList } from './HashDrawer';
+import { closeDrawer, openDrawer, openModal } from '../../Config/UIStore';
 import moment from 'moment';
-import { removeDrink, retrieveDrinksForListUser } from './../../Config/Axios';
+import { removeDrink} from '../../Config/Axios';
 import ConfirmationModal from "./ConfirmationModal";
 import { faBeerMugEmpty } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'

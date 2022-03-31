@@ -12,7 +12,6 @@ export function register(config) {
 }
 
 function registerValidSW(swUrl, config) {
-    console.log("serviceworker registering " + process.env.VERSION_HASH);
     navigator.serviceWorker
         .register(swUrl)
         .then(registration => {
@@ -24,11 +23,9 @@ function registerValidSW(swUrl, config) {
                 installingWorker.onstatechange = () => {
                     if (installingWorker.state === 'installed') {
                         if (navigator.serviceWorker.controller) {
-                            console.log("unregistering");
                             registration.unregister();
                             window.location.reload();
                         } else {
-                            console.log('Content is cached for offline use.');
                             if (config && config.onSuccess) {
                                 config.onSuccess(registration);
                             }

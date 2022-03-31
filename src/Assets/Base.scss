@@ -98,10 +98,6 @@ text {
   }
 }
 
-.overflow-page {
-  width: 300vw;
-  position: relative;
-  display: flex;
-  overflow-x: visible;
-  transition: 250ms ease-out;
+.react-horizontal-scrolling-menu--scroll-container {
+  overflow-x: hidden;
 }

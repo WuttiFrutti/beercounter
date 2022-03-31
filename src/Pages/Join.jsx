@@ -13,10 +13,10 @@ const Join = () => {
 
     useEffect(() => {
         joinList(params.shareId).then(() => {
-            history.push("/");
-            openSnack(<>Je doet nu mee aan de lijst!</>,"info")
+            history.push("/home");
+            openSnack(<>Je doet nu mee aan de lijst!</>, "info")
         }).catch(() => {
-            history.push("/")
+            history.push("/home")
         });
     }, [])
 

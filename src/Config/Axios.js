@@ -90,7 +90,6 @@ export const checkLogin = async () => {
 export const registerToken = async (token) => {
     try{
         await axios.post("user/messaging", { token });
-        console.log(`Registered: ${token} for messaging`);
     }catch(e){
         defaultHandler("Kan notificaties niet tonen!");
     }

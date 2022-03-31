@@ -7,7 +7,7 @@ const Profile = () => {
     const history = useHistory();
 
     const back = () => {
-        history.push("/")
+        history.push("/home")
     }
 
     return <Box sx={{ height: "100vh", width: "100vw", position: "absolute", display: "flex" }}>
