@@ -15,10 +15,10 @@ const messaging = require("../messaging/messaging");
 
 const expirationCheck = async (req, user) => {
   const token = user.getTokens().find(t => t.token === req.cookies.token);
-  
-  if(!token){
+
+  if (!token) {
     await User.updateOne({ "tokens.token": req.cookies.token }, {
-      $pull:{
+      $pull: {
         tokens: { token: req.cookies.token }
       }
     });
@@ -29,17 +29,17 @@ const expirationCheck = async (req, user) => {
 
 routes.use(async (req, res, next) => {
   if (req.cookies.token !== undefined) {
-    const user = await User.findOneAndUpdate({ "tokens.token": req.cookies.token }, { 
+    const user = await User.findOneAndUpdate({ "tokens.token": req.cookies.token }, {
       $set: {
         "tokens.$.updatedAt": Date.now()
       }
     });
     if (user !== null) {
-      if(expirationCheck(req,user)){
+      if (expirationCheck(req, user)) {
         res.locals.user = user;
         next();
-      }else{
-        res.status(401).cookie("token","",{ maxAge:0 }).send({ message:"je Sessie is verlopen!" });
+      } else {
+        res.status(401).cookie("token", "", { maxAge: 0 }).send({ message: "je Sessie is verlopen!" });
       }
       return;
     }
@@ -97,7 +97,7 @@ routes.post("/list", async (req, res) => {
   const list = await new List({ name: req.body.name, price: req.body.price, owner: res.locals.user._id, users: req.body.join ? [{ drinks: [], user: res.locals.user._id }] : [] }).save();
 
   const devices = found.map(u => u.getMessageTokens()).flat();
-  if(devices.length > 0){
+  if (devices.length > 0) {
     messaging.sendToDevice(devices, {
       data: {
         title: `Je bent uitgenodigd voor een lijst`,
@@ -110,7 +110,7 @@ routes.post("/list", async (req, res) => {
       }
     });
   }
-  
+
   Promise.all(found.map(f => sendJoinRequest(f, res.locals.user, list))).then((e) => {
     res.json(list);
   }).catch((e) => {
@@ -130,7 +130,7 @@ routes.put("/list", async (req, res) => {
 
   const devices = returnList.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getMessageTokens()], []);
 
-  messaging.sendToDevice(devices,{
+  messaging.sendToDevice(devices, {
     data: {
       title: `${res.locals.user.username}. heeft een lijst beëindigd!`,
       body: `${res.locals.user.username} heeft lijst ${returnList.name} beëidigd!`,
@@ -157,9 +157,9 @@ routes.post("/list/user", async (req, res) => {
 routes.post("/list/notify", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, owner: res.locals.user._id }).populate("users.user");
   const devices = list.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getMessageTokens()], []);
-  if(devices.length > 0){
+  if (devices.length > 0) {
     console.log("sending to ", devices);
-    messaging.sendToDevice(devices,{
+    messaging.sendToDevice(devices, {
       data: {
         title: `Vul je lijst in.`,
         body: `${res.locals.user.username} heeft gevraagd of je de lijst kan invullen!`,
@@ -175,9 +175,12 @@ routes.post("/list/notify", async (req, res) => {
 });
 
 routes.post("/list/drink", async (req, res) => {
-  const list = await List.findOne({ _id: req.body.id, "users.user": res.locals.user._id });
+  const list = await List.findOne({ _id: req.body.id, $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
 
-  const drink = await new Drink({ amount: req.body.amount, user: res.locals.user._id, list: list._id }).save();
+  if (res.locals.user._id.toString() !== req.body.user) {
+    req.body.user = false;
+  }
+  const drink = await new Drink({ amount: req.body.amount, user: req.body.user || res.locals.user._id, list: list._id, date }).save();
   const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
   user.drinks.push(drink._id);
   user.total += drink.amount;
@@ -191,7 +194,7 @@ routes.post("/list/drink", async (req, res) => {
 })
 
 routes.delete("/list/drink", async (req, res) => {
-  const drink = await Drink.findOne({ _id: req.body.id, $or: [{ user: res.locals.user._id }, { owner: res.locals.user._id}] }).populate("user");
+  const drink = await Drink.findOne({ _id: req.body.id, $or: [{ user: res.locals.user._id }, { owner: res.locals.user._id }] }).populate("user");
   const list = await List.findOne({ _id: drink.list });
 
   const user = list.users.find(u => u.user.toString() === drink.user._id.toString());

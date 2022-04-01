@@ -132,9 +132,9 @@ export const joinList = async (shareId) => {
 
 
 
-export const addDrink = async (listId, amount, user = false) => {
+export const addDrink = async (listId, amount, user = false, date = Date.now()) => {
     try{
-        const { data } = await axios.post("list/drink",{ id: listId, amount:amount, user:user });
+        const { data } = await axios.post("list/drink",{ id: listId, amount:amount, user:user, date });
         await retrieveDrinksForListUser(listId, user || MainStore.currentState.user._id);
         await retrieveLists();
         return data;
@@ -150,6 +150,17 @@ export const removeDrink = async (listId, drink) => {
         await retrieveLists();
     }catch(e){
         defaultHandler();
+    }
+}
+
+export const editDrink = async (oldDrink, amount, date) => {
+    try{
+        const { data } = await axios.put("list/drink",{ id: oldDrink.listId, amount:amount, date:date, user:oldDrink.listId });
+        await retrieveDrinksForListUser(oldDrink.listId, oldDrink.userId);
+        await retrieveLists();
+        return data;
+    }catch(e){
+        defaultHandler()
     }
 }
 
