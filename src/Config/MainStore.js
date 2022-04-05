@@ -5,9 +5,9 @@ import { retrieveDrinksForListUser, retrieveDrinksForList } from './Axios';
 export const defaultState = {
     user: false,
     lists: [],
-    ended:[],
-    users:[],
-    drinks:{},
+    ended: [],
+    users: [],
+    drinks: {},
     userDrinks: [],
     darkmode: getCookie("darkmode") === 'true'
 }
@@ -22,21 +22,21 @@ export const setDarkMode = (mode = !MainStore.currentState.darkmode) => {
 }
 
 export const getDrinks = (listId, userId) => (s) => {
-    if(listId === undefined) return [];
+    if (listId === undefined) return [];
 
-    if(userId === undefined){
-        if(s.drinks[listId] === undefined){
+    if (userId === undefined) {
+        if (s.drinks[listId] === undefined) {
             MainStore.update(s => { s.drinks[listId] = {} });
             retrieveDrinksForList(listId);
             return;
         }
         return Object.values(s.drinks[listId]).flat();
-    }else{
-        if(s.drinks[listId] === undefined) {
+    } else {
+        if (s.drinks[listId] === undefined) {
             MainStore.update(s => { s.drinks[listId] = {} });
             return;
         }
-        if(s.drinks[listId][userId] === undefined){
+        if (s.drinks[listId][userId] === undefined) {
             MainStore.update(s => { s.drinks[listId][userId] = [] });
             retrieveDrinksForListUser(listId, userId);
         }
@@ -46,4 +46,4 @@ export const getDrinks = (listId, userId) => (s) => {
 
 registerInDevtools({
     MainStore,
-  });
+});

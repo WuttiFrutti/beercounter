@@ -8,8 +8,8 @@ const AnimatedLink = forwardRef((args, ref) => {
             search: args.search,
             hash: args.hash,
             state: { ...args.state, animation: args.animation }
-          
-    }} />
+
+        }} />
 
 });
 

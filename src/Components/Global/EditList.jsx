@@ -1,15 +1,16 @@
 import { Add, Close, Edit } from "@mui/icons-material";
-import { Box, Typography, ListItem, ListItemText, IconButton, ListItemButton, ListItemIcon } from "@mui/material";
+import { Box, Typography, ListItem, ListItemText, IconButton, ListItemButton, ListItemIcon, TextField, Button } from "@mui/material";
 import { fillListUser } from "../../Config/Helpers";
 import { getDrinks, MainStore } from "../../Config/MainStore";
 import { DrawerList } from './HashDrawer';
 import { closeDrawer, openDrawer, openModal } from '../../Config/UIStore';
 import moment from 'moment';
-import { removeDrink} from '../../Config/Axios';
+import { addDrink, editDrink, removeDrink } from '../../Config/Axios';
+import { useState } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import { faBeerMugEmpty } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
+import { retrieveDrinksForListUser } from './../../Config/Axios';
 
 
 const EditList = ({ listId }) => {
@@ -23,14 +24,12 @@ const EditList = ({ listId }) => {
 
     const generateList = list?.users.map(u => {
         u = fillListUser(u, users);
-        return <>
-            <ListItem key={u.user}>
-                <ListItemText primary={u.user.username} secondary={`Totaal: ${u.total}`} />
-                <IconButton onClick={() => swapDrawer(u)} edge="end">
-                    <Edit />
-                </IconButton>
-            </ListItem>
-        </>
+        return <ListItem key={u.user._id}>
+            <ListItemText primary={u.user.username} secondary={`Totaal: ${u.total}`} />
+            <IconButton onClick={() => swapDrawer(u)} edge="end">
+                <Edit />
+            </IconButton>
+        </ListItem>
     })
 
     return <div>
@@ -52,7 +51,7 @@ const EditUser = ({ user, listId }) => {
     }
 
     const openCreateModal = () => {
-        openModal(<CreateDrinkModal />, "Aanmaken")
+        openModal(<CreateDrinkModal user={user} listId={listId} />, "Aanmaken")
     }
 
     const drinkList = drinks?.map(d => <ListItem key={d._id}>
@@ -99,13 +98,66 @@ const RemoveDrinkModal = ({ drink }) => {
 
 const EditDrinkModal = ({ drink }) => {
 
-    return null
+    const save = async (date, amount) => editDrink(drink, amount, date);
+    
+
+    return <EditDrink save={save} amount={drink.amount} date={drink.updatedAt} />
 }
 
-const CreateDrinkModal = () => {
+const CreateDrinkModal = ({listId, user}) => {
 
-    return null;
+    const save = async (date, amount) => addDrink(listId, amount, user._id, date);
+
+
+    return <EditDrink save={save} date={new Date()} amount={1} />
 }
+
+const EditDrink = ({ amount: propAmount = 0, date: propDate = Date.now(), save: saveMethod = () => Promise.resolve() }) => {
+    const [date, setDate] = useState(propDate);
+    const [amount, setAmount] = useState(propAmount);
+    const [disabled, setDisabled] = useState(false)
+
+    const save = (e) => {
+        e.preventDefault()
+        if (!disabled) {
+            setDisabled(true)
+            saveMethod(date, amount).then(() => {
+                setDisabled(false);
+            });
+        }
+    }
+
+    return <form onSubmit={save}>
+        <TextField
+            disabled={disabled}
+            sx={{ marginTop: "1em" }}
+            label="Datum"
+            type="datetime-local"
+            value={moment(date).format('yyyy-MM-D[T]hh:mm')}
+            onChange={(e) => setDate(e.target.value)}
+            InputLabelProps={{
+                shrink: true,
+            }}
+        /><br />
+        <TextField
+            sx={{ marginTop: "1em" }}
+            label="Aantal"
+            type="number"
+            disabled={disabled}
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            InputLabelProps={{
+                shrink: true,
+            }}
+        /><br />
+
+        <Button disabled={disabled} type="submit">
+            Opslaan
+        </Button>
+    </form>
+}
+
+
 
 
 export default EditList;
