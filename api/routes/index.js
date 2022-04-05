@@ -175,41 +175,46 @@ routes.post("/list/notify", async (req, res) => {
 });
 
 routes.post("/list/drink", async (req, res) => {
-  const list = await List.findOne({ _id: req.body.id, $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
+  const list = await List.findOne({ _id: req.body.id, $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users");
 
-  if (res.locals.user._id.toString() !== req.body.user) {
-    req.body.user = false;
-    req.body.date = Date.now()
+  let useUser;
+  if (res.locals.user._id.toString() !== list.owner._id.toString()) {
+    useUser = res.locals.user._id;
+    req.body.date = Date.now();
+  } else {
+    useUser = req.body.user;
   }
-  const drink = await new Drink({ amount: req.body.amount, user: req.body.user || res.locals.user._id, list: list._id, updatedAt: req.body.date }).save();
-  const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
+
+  const drink = await new Drink({ amount: req.body.amount, user: useUser, list: list._id, updatedAt: req.body.date }).save();
+  const user = list.users.id(useUser);
   user.drinks.push(drink._id);
   user.total += drink.amount;
   list.total += drink.amount;
 
-  user.save();
+  await User.updateOne({ _id: user._id }, { $inc: { total: drink.amount } });
+
   list.save();
 
   res.json(drink);
 })
 
 routes.put("/list/drink", async (req, res) => {
-  const list = await List.findOne({ _id:req.body.listId, owner: res.locals.user._id });
+  const list = await List.findOne({ _id: req.body.listId, owner: res.locals.user._id });
   const drink = await Drink.findOne({ _id: req.body.id, listId: list._id });
 
   const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
 
 
-  if(drink){
-    user.total += req.body.amount - drink.amount;
-    list.total += req.body.amount - drink.amount;
+  if (drink) {
+    const total = req.body.amount - drink.amount;
+    user.total += total;
+    list.total += total;
     drink.amount = req.body.amount;
     drink.updatedAt = req.body.date;
+    drink.save();
+    await User.updateOne({ _id: user.id }, { $inc: { total: total } });
+    list.save();
   }
-
-  user.save();
-  list.save();
-  drink.save();
 });
 
 routes.delete("/list/drink", async (req, res) => {
