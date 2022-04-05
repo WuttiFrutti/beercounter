@@ -3,10 +3,10 @@
 export function register(config) {
     if ('serviceWorker' in navigator) {
         // if (process.env.NODE_ENV === 'production') {
-            window.addEventListener('load', () => {
-                const swUrl = `${process.env.PUBLIC_URL || ""}/service-worker.js?v=${process.env.VERSION_HASH}`;
-                registerValidSW(swUrl, config);
-            });
+        window.addEventListener('load', () => {
+            const swUrl = `${process.env.PUBLIC_URL || ""}/service-worker.js?v=${process.env.VERSION_HASH}`;
+            registerValidSW(swUrl, config);
+        });
         // }
     }
 }

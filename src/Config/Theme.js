@@ -57,10 +57,10 @@ export const palette = {
     }
   },
   dark: {
-    mode:"dark",
+    mode: "dark",
     primary: {
       main: '#285a84',
-      
+
     },
     secondary: {
       main: '#ef6f53',
@@ -315,8 +315,8 @@ const theme = {
 
 
 
-export const light = createTheme({ ...theme, palette:palette.light });
-export const dark = createTheme({ ...theme, palette:palette.dark });
+export const light = createTheme({ ...theme, palette: palette.light });
+export const dark = createTheme({ ...theme, palette: palette.dark });
 
 
 export default theme;

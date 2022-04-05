@@ -179,19 +179,38 @@ routes.post("/list/drink", async (req, res) => {
 
   if (res.locals.user._id.toString() !== req.body.user) {
     req.body.user = false;
+    req.body.date = Date.now()
   }
-  const drink = await new Drink({ amount: req.body.amount, user: req.body.user || res.locals.user._id, list: list._id, date }).save();
+  const drink = await new Drink({ amount: req.body.amount, user: req.body.user || res.locals.user._id, list: list._id, updatedAt: req.body.date }).save();
   const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
   user.drinks.push(drink._id);
   user.total += drink.amount;
   list.total += drink.amount;
-  res.locals.user.total += drink.amount;
 
-  res.locals.user.save();
+  user.save();
   list.save();
 
   res.json(drink);
 })
+
+routes.put("/list/drink", async (req, res) => {
+  const list = await List.findOne({ _id:req.body.listId, owner: res.locals.user._id });
+  const drink = await Drink.findOne({ _id: req.body.id, listId: list._id });
+
+  const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
+
+
+  if(drink){
+    user.total += req.body.amount - drink.amount;
+    list.total += req.body.amount - drink.amount;
+    drink.amount = req.body.amount;
+    drink.updatedAt = req.body.date;
+  }
+
+  user.save();
+  list.save();
+  drink.save();
+});
 
 routes.delete("/list/drink", async (req, res) => {
   const drink = await Drink.findOne({ _id: req.body.id, $or: [{ user: res.locals.user._id }, { owner: res.locals.user._id }] }).populate("user");

@@ -23,17 +23,17 @@ export const notificationPermissions = async () => {
         await Notification.requestPermission();
         const token = await getToken(messaging);
 
-        messaging.onMessageHandler = function(payload) {
+        messaging.onMessageHandler = function (payload) {
             const { data, body, actions } = payload.data;
-          
+
             const notificationOptions = {
-              body: body,
-              data: JSON.parse(data),
-              actions: JSON.parse(actions)
+                body: body,
+                data: JSON.parse(data),
+                actions: JSON.parse(actions)
             };
-          
+
             const not = messaging.swRegistration.showNotification(payload.data.title, notificationOptions);
-          };
+        };
 
         return token;
     } catch (error) {

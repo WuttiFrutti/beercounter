@@ -10,6 +10,7 @@ import { useState } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import { faBeerMugEmpty } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { retrieveDrinksForListUser } from './../../Config/Axios';
 
 
 const EditList = ({ listId }) => {
@@ -50,7 +51,7 @@ const EditUser = ({ user, listId }) => {
     }
 
     const openCreateModal = () => {
-        openModal(<CreateDrinkModal />, "Aanmaken")
+        openModal(<CreateDrinkModal user={user} listId={listId} />, "Aanmaken")
     }
 
     const drinkList = drinks?.map(d => <ListItem key={d._id}>
@@ -97,21 +98,18 @@ const RemoveDrinkModal = ({ drink }) => {
 
 const EditDrinkModal = ({ drink }) => {
 
-    const save = async (date, amount) => {
-        editDrink(drink, amount, date);
-    }
+    const save = async (date, amount) => editDrink(drink, amount, date);
+    
 
     return <EditDrink save={save} amount={drink.amount} date={drink.updatedAt} />
 }
 
-const CreateDrinkModal = (listId) => {
+const CreateDrinkModal = ({listId, user}) => {
 
-    const save = async (date, amount) => {
-        addDrink()
-    }
+    const save = async (date, amount) => addDrink(listId, amount, user._id, date);
 
 
-    return <EditDrink save={save}/>
+    return <EditDrink save={save} date={new Date()} amount={1} />
 }
 
 const EditDrink = ({ amount: propAmount = 0, date: propDate = Date.now(), save: saveMethod = () => Promise.resolve() }) => {

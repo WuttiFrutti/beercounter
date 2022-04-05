@@ -38,7 +38,7 @@ export const mapDrinksToGraph = (drinks, { datapoints = 10, forceDif = undefined
         points.push(reducer(drinks.filter(d => new Date(d.createdAt).getTime() <= i) || points.length === datapoints - 1, i));
         drinks = drinks.filter(d => new Date(d.createdAt).getTime() > i)
     }
-    if(drinks.length !== 0){
+    if (drinks.length !== 0) {
         points[points.length] = reducer(drinks, lastDate);
     }
 
@@ -53,4 +53,4 @@ export const reduceUsersToDrinks = (users) => users.reduce((a, b) => a.concat(..
 
 export const mapDrinksToNumber = (drinks) => drinks.reduce((a, b) => a + b.amount, 0);
 
-export const fillListUser = (user, users) => ({...user, user:users.find(u => u._id === user.user)});
+export const fillListUser = (user, users) => ({ ...user, user: users.find(u => u._id === user.user) });
