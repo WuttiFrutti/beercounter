@@ -101,3 +101,9 @@ text {
 .react-horizontal-scrolling-menu--scroll-container {
   overflow-x: hidden;
 }
+
+.horizontal-scroll-wrapper {
+  width: 300vw;
+  display: flex;
+  position: relative;
+}

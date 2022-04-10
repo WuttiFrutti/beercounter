@@ -154,8 +154,9 @@ export const removeDrink = async (listId, drink) => {
 }
 
 export const editDrink = async (oldDrink, amount, date) => {
+    console.log(oldDrink)
     try {
-        const { data } = await axios.put("list/drink", { listId: oldDrink.listId, id: oldDrink._id, amount: amount, date: date });
+        const { data } = await axios.put("list/drink", { listId: oldDrink.list, id: oldDrink._id, amount: amount, date: date });
         await retrieveDrinksForListUser(oldDrink.listId, oldDrink.userId);
         await retrieveLists();
         return data;

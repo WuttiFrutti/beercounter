@@ -29,17 +29,15 @@ const expirationCheck = async (req, user) => {
 
 routes.use(async (req, res, next) => {
   if (req.cookies.token !== undefined) {
-    const user = await User.findOneAndUpdate({ "tokens.token": req.cookies.token }, {
-      $set: {
-        "tokens.$.updatedAt": Date.now()
-      }
-    });
+    const user = await User.findOne({ "tokens.token": req.cookies.token });
     if (user !== null) {
-      if (expirationCheck(req, user)) {
+      if (await expirationCheck(req, user)) {
+        user.getTokens().find(t => t.token === req.cookies.token).updatedAt = Date.now();
+        await user.save();
         res.locals.user = user;
         next();
       } else {
-        res.status(401).cookie("token", "", { maxAge: 0 }).send({ message: "je Sessie is verlopen!" });
+        res.status(200).cookie("token", "", { maxAge: 0 }).send({ message: "je Sessie is verlopen!" });
       }
       return;
     }
@@ -76,7 +74,7 @@ routes.get("/list/:listId/drinks", async (req, res) => {
 });
 
 routes.post("/user/messaging", async (req, res) => {
-  res.locals.user.tokens = res.locals.user.tokens.filter(t => t.token === req.cookies.token || t.messageToken !== req.body.token);
+  // res.locals.user.tokens = res.locals.user.tokens.filter(t => t.token === req.cookies.token || t.messageToken !== req.body.token);
   res.locals.user.tokens.find(t => t.token === req.cookies.token).messageToken = req.body.token;
   await res.locals.user.save();
   res.send();
@@ -177,16 +175,14 @@ routes.post("/list/notify", async (req, res) => {
 routes.post("/list/drink", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users");
 
-  let useUser;
-  if (res.locals.user._id.toString() !== list.owner._id.toString()) {
-    useUser = res.locals.user._id;
-    req.body.date = Date.now();
+  let user;
+  if (req.body.user !== false && res.locals.user._id.toString() === list.owner._id.toString()) {
+    user = list.users.find(u => u.user.toString() === req.body.user);
   } else {
-    useUser = req.body.user;
+    user = list.users.find(u => u.user.toString() === res.locals.user._id.toString());
+    req.body.date = Date.now();
   }
-
-  const drink = await new Drink({ amount: req.body.amount, user: useUser, list: list._id, updatedAt: req.body.date }).save();
-  const user = list.users.id(useUser);
+  const drink = await new Drink({ amount: req.body.amount, user: user.user, list: list._id, updatedAt: req.body.date }).save({ timestamps: false });
   user.drinks.push(drink._id);
   user.total += drink.amount;
   list.total += drink.amount;
@@ -204,17 +200,19 @@ routes.put("/list/drink", async (req, res) => {
 
   const user = list.users.find(user => user.user.toString() === res.locals.user._id.toString());
 
-
   if (drink) {
     const total = req.body.amount - drink.amount;
     user.total += total;
     list.total += total;
     drink.amount = req.body.amount;
     drink.updatedAt = req.body.date;
-    drink.save();
-    await User.updateOne({ _id: user.id }, { $inc: { total: total } });
+    drink.save({ timestamps: false });
+    await User.updateOne({ _id: user.user }, { $inc: { total: total } });
     list.save();
+
+    return res.send();
   }
+  res.status(401).send();
 });
 
 routes.delete("/list/drink", async (req, res) => {
