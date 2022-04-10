@@ -29,17 +29,15 @@ const expirationCheck = async (req, user) => {
 
 routes.use(async (req, res, next) => {
   if (req.cookies.token !== undefined) {
-    const user = await User.findOneAndUpdate({ "tokens.token": req.cookies.token }, {
-      $set: {
-        "tokens.$.updatedAt": Date.now()
-      }
-    });
+    const user = await User.findOne({ "tokens.token": req.cookies.token });
     if (user !== null) {
-      if (expirationCheck(req, user)) {
+      if (await expirationCheck(req, user)) {
+        user.getTokens().find(t => t.token === req.cookies.token).updatedAt = Date.now();
+        await user.save();
         res.locals.user = user;
         next();
       } else {
-        res.status(401).cookie("token", "", { maxAge: 0 }).send({ message: "je Sessie is verlopen!" });
+        res.status(200).cookie("token", "", { maxAge: 0 }).send({ message: "je Sessie is verlopen!" });
       }
       return;
     }
@@ -76,7 +74,7 @@ routes.get("/list/:listId/drinks", async (req, res) => {
 });
 
 routes.post("/user/messaging", async (req, res) => {
-  res.locals.user.tokens = res.locals.user.tokens.filter(t => t.token === req.cookies.token || t.messageToken !== req.body.token);
+  // res.locals.user.tokens = res.locals.user.tokens.filter(t => t.token === req.cookies.token || t.messageToken !== req.body.token);
   res.locals.user.tokens.find(t => t.token === req.cookies.token).messageToken = req.body.token;
   await res.locals.user.save();
   res.send();

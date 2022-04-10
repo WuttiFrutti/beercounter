@@ -3,22 +3,22 @@ const mongooseHidden = require('mongoose-hidden')({ defaultHidden: { __v: true }
 const crypto = require('crypto');
 const { Schema } = mongoose;
 
+const TokenSchema = new Schema(
+    {
+        token: { type:String, required: true },
+        messageToken: { type:String },
+        expire: { type:Boolean, required: true }
+    },
+    { timestamps: true }
+)
+
 const UserSchema = new Schema({
     username: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     hash: { type: String, hide: true },
     salt: { type: String, hide: true },
     total: { type: Number, default: 0 },
-    tokens: [{
-        type: new Schema(
-            {
-                token: { type:String, required: true },
-                messageToken: { type:String },
-                expire: { type:Boolean, required: true }
-            },
-            { timestamps: true }
-        )
-    }]
+    tokens: [TokenSchema]
 });   
 
 UserSchema.virtual("password")
