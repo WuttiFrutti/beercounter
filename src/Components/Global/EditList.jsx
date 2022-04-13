@@ -59,7 +59,7 @@ const EditUser = ({ user, listId }) => {
         <ListItemIcon>
             <FontAwesomeIcon size="2xl" icon={faBeerMugEmpty} />
         </ListItemIcon>
-        <ListItemText primary={moment(d.updatedAt).format('hh:mm D/M/YYYY')} secondary={`Aantal: ${d.amount}`} />
+        <ListItemText primary={moment(d.updatedAt).format('HH:mm DD/M/YYYY')} secondary={`Aantal: ${d.amount}`} />
         <IconButton onClick={() => openRemoveModal(d)} edge="end">
             <Close />
         </IconButton>
@@ -111,14 +111,11 @@ const EditDrinkModal = ({ drink }) => {
 
 const CreateDrinkModal = ({ listId, user }) => {
 
-    console.log(user);
-
     const save = async (date, amount) => {
-        const data = await addDrink(listId, amount, user.user, date);
+        const data = await addDrink(listId, amount, user.user._id, date);
         closeModal();
         return data;
     };
-
 
     return <EditDrink save={save} date={new Date()} amount={1} />
 }
@@ -146,7 +143,7 @@ const EditDrink = ({ amount: propAmount = 0, date: propDate = Date.now(), save: 
             sx={{ marginTop: "1em" }}
             label="Datum"
             type="datetime-local"
-            value={moment(date).format('yyyy-MM-D[T]hh:mm')}
+            value={moment(date).format('yyyy-MM-DD[T]HH:mm')}
             onChange={(e) => setDate(e.target.value)}
             InputLabelProps={{
                 shrink: true,

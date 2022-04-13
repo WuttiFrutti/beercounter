@@ -182,7 +182,7 @@ routes.post("/list/drink", async (req, res) => {
     user = list.users.find(u => u.user.toString() === res.locals.user._id.toString());
     req.body.date = Date.now();
   }
-  const drink = await new Drink({ amount: req.body.amount, user: user.user, list: list._id, updatedAt: req.body.date }).save({ timestamps: false });
+  const drink = await new Drink({ amount: req.body.amount, user: user.user, list: list._id, updatedAt: req.body.date, createdAt: Date.now() }).save({ timestamps: false });
   user.drinks.push(drink._id);
   user.total += drink.amount;
   list.total += drink.amount;
