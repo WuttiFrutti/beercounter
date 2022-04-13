@@ -18,14 +18,14 @@ const cumulativeMap = (plot, id, arr) => {
 
 export const mapDrinksToGraph = (drinks, { datapoints = 10, forceDif = undefined, absoluteStart = 0, cumulate = false }) => {
 
-    let firstDate = new Date(drinks[0].createdAt).getTime();
-    const lastDate = forceDif !== undefined ? Date.now() + absoluteStart : new Date(drinks[drinks.length - 1].createdAt).getTime();
+    let firstDate = new Date(drinks[0].updatedAt).getTime();
+    const lastDate = forceDif !== undefined ? Date.now() + absoluteStart : new Date(drinks[drinks.length - 1].updatedAt).getTime();
 
     let part = (lastDate - firstDate) / datapoints;
     if (forceDif !== undefined) {
         part = forceDif;
         firstDate = lastDate - (part * datapoints);
-        drinks = drinks.filter(d => new Date(d.createdAt).getTime() >= firstDate);
+        drinks = drinks.filter(d => new Date(d.updatedAt).getTime() >= firstDate);
     }
 
     const points = [];
@@ -35,8 +35,8 @@ export const mapDrinksToGraph = (drinks, { datapoints = 10, forceDif = undefined
 
     for (let _i = firstDate + part; _i <= lastDate; _i += part) {
         const i = Math.ceil(_i)
-        points.push(reducer(drinks.filter(d => new Date(d.createdAt).getTime() <= i) || points.length === datapoints - 1, i));
-        drinks = drinks.filter(d => new Date(d.createdAt).getTime() > i)
+        points.push(reducer(drinks.filter(d => new Date(d.updatedAt).getTime() <= i) || points.length === datapoints - 1, i));
+        drinks = drinks.filter(d => new Date(d.updatedAt).getTime() > i)
     }
     if (drinks.length !== 0) {
         points[points.length] = reducer(drinks, lastDate);

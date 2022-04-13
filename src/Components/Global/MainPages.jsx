@@ -10,7 +10,6 @@ import { useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { useHistory } from 'react-router-dom';
 import { ScrollMenu } from 'react-horizontal-scrolling-menu';
-import useAnimationFrame from 'use-animation-frame';
 
 const paths = [{
   path: "/home/mijn-lijsten",
@@ -22,8 +21,6 @@ const paths = [{
   path: "/home/lijsten-beheren",
   id: 2
 }];
-
-let currentAnim;
 
 const MainPages = () => {
   const ref = useRef();

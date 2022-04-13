@@ -176,13 +176,13 @@ routes.post("/list/drink", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users");
 
   let user;
-  if (req.body.user !== false && res.locals.user._id.toString() === list.owner._id.toString()) {
+  if (req.body.user !== false && res.locals.user._id.toString() === list.owner.toString()) {
     user = list.users.find(u => u.user.toString() === req.body.user);
   } else {
     user = list.users.find(u => u.user.toString() === res.locals.user._id.toString());
     req.body.date = Date.now();
   }
-  const drink = await new Drink({ amount: req.body.amount, user: user.user, list: list._id, updatedAt: req.body.date }).save({ timestamps: false });
+  const drink = await new Drink({ amount: req.body.amount, user: user.user, list: list._id, updatedAt: req.body.date, createdAt: Date.now() }).save({ timestamps: false });
   user.drinks.push(drink._id);
   user.total += drink.amount;
   list.total += drink.amount;
