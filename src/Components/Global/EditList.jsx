@@ -11,6 +11,7 @@ import ConfirmationModal from "./ConfirmationModal";
 import { faBeerMugEmpty } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { retrieveDrinksForListUser } from './../../Config/Axios';
+import { closeModal } from './../../Config/UIStore';
 
 
 const EditList = ({ listId }) => {
@@ -98,15 +99,25 @@ const RemoveDrinkModal = ({ drink }) => {
 
 const EditDrinkModal = ({ drink }) => {
 
-    const save = async (date, amount) => editDrink(drink, amount, date);
-    
+    const save = async (date, amount) => {
+        const data = await editDrink(drink, amount, date);
+        closeModal();
+        return data;
+    };
+
 
     return <EditDrink save={save} amount={drink.amount} date={drink.updatedAt} />
 }
 
-const CreateDrinkModal = ({listId, user}) => {
+const CreateDrinkModal = ({ listId, user }) => {
 
-    const save = async (date, amount) => addDrink(listId, amount, user._id, date);
+    console.log(user);
+
+    const save = async (date, amount) => {
+        const data = await addDrink(listId, amount, user.user, date);
+        closeModal();
+        return data;
+    };
 
 
     return <EditDrink save={save} date={new Date()} amount={1} />
@@ -122,6 +133,8 @@ const EditDrink = ({ amount: propAmount = 0, date: propDate = Date.now(), save: 
         if (!disabled) {
             setDisabled(true)
             saveMethod(date, amount).then(() => {
+                setDisabled(false);
+            }).catch(() => {
                 setDisabled(false);
             });
         }

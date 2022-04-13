@@ -176,7 +176,7 @@ routes.post("/list/drink", async (req, res) => {
   const list = await List.findOne({ _id: req.body.id, $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users");
 
   let user;
-  if (req.body.user !== false && res.locals.user._id.toString() === list.owner._id.toString()) {
+  if (req.body.user !== false && res.locals.user._id.toString() === list.owner.toString()) {
     user = list.users.find(u => u.user.toString() === req.body.user);
   } else {
     user = list.users.find(u => u.user.toString() === res.locals.user._id.toString());
