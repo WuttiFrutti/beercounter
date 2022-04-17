@@ -14,7 +14,7 @@ const Profile = () => {
     return <Box sx={{ m: 4, }}>
         <Container maxWidth="sm">
             <Card sx={{ width: "100%", display: "flex" }}>
-                <Box sx={{ p: 4 }}>
+                <Box sx={{ p: 4, width: "100%", }}>
                     <Typography variant="h6" component="h2">
                         Profiel
                     </Typography>
@@ -27,7 +27,7 @@ const Profile = () => {
                         <AccordionDetails>
                             <Typography>
                                 {/* TODO: ADD list settings */}
-
+                                Er is hier momenteel niks te zien!
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -52,6 +52,7 @@ const Profile = () => {
                         <AccordionDetails>
                             <Typography>
                                 {/* TODO:ADD Notification settings */}
+                                Er is hier momenteel niks te zien!
                             </Typography>
                         </AccordionDetails>
                     </Accordion>

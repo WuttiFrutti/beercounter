@@ -47,20 +47,27 @@ routes.use(async (req, res, next) => {
 
 routes.get("/main", async (req, res) => {
   let inLists = await List.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
-  let endedLists = await EndedList.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
+  // let endedLists = await EndedList.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
   const drinks = await Drink.find({ user: res.locals.user._id });
 
   const map = list => (list.owner.toString() === res.locals.user._id.toString() ? { ...list.toJSON(), shareId: list.shareId } : list)
 
   inLists = inLists.map(map);
-  endedLists = endedLists.map(map);
 
-  const withUsers = [...(new Set([...endedLists, ...inLists].map(list => list.users.map(users => users.user.toString())).flat()))];
+  const withUsers = [...(new Set(inLists.map(list => list.users.map(users => users.user.toString())).flat()))];
 
   const users = await User.find({ _id: { $in: withUsers } });
 
-  res.json({ lists: inLists, ended: endedLists, users: users, userDrinks: drinks });
+  res.json({ lists: inLists, users: users, userDrinks: drinks });
 });
+
+routes.get("/ended", async (req, res) => {
+  let endedLists = await EndedList.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users.user");
+
+  console.log(endedLists);
+
+  res.send([]);
+})
 
 
 routes.get("/list/:listId/user/:userId", async (req, res) => {
