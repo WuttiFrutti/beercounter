@@ -133,7 +133,7 @@ routes.delete("/list/:id", async (req, res) => {
     returnList = await new EndedList(list.toJSON()).save();
   }
 
-  const devices = returnList.users.map(u => u.getMessageTokens()).flat();
+  const devices = returnList.users.map(u => u.user.getMessageTokens()).flat();
 
   messaging.sendToDevice(devices, {
     data: {
