@@ -62,11 +62,9 @@ routes.get("/main", async (req, res) => {
 });
 
 routes.get("/ended", async (req, res) => {
-  let endedLists = await EndedList.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users.user");
+  let endedLists = await EndedList.find({ $or: [{ "users.user.id": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users.user");
 
-  console.log(endedLists);
-
-  res.send([]);
+  res.send(endedLists);
 })
 
 
@@ -125,15 +123,17 @@ routes.post("/list", async (req, res) => {
 
 });
 
-routes.put("/list", async (req, res) => {
-  const list = await List.findOneAndRemove({ _id: req.body.id, owner: res.locals.user._id }).populate("users.user");
+routes.delete("/list/:id", async (req, res) => {
+  const list = await List.findOneAndRemove({ _id: req.params.id, owner: res.locals.user._id }).populate("users.user");
+
+  console.log(list);
 
   let returnList = null;
   if (list !== null) {
     returnList = await new EndedList(list.toJSON()).save();
   }
 
-  const devices = returnList.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getMessageTokens()], []);
+  const devices = returnList.users.map(u => u.getMessageTokens()).flat();
 
   messaging.sendToDevice(devices, {
     data: {
