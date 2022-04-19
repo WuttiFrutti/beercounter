@@ -111,7 +111,6 @@ export const retrieveLists = async () => {
         const { data } = await axios.get("main");
         MainStore.update(s => {
             s.lists = data.lists;
-            s.ended = data.ended;
             s.users = data.users;
             s.userDrinks = data.userDrinks;
         });
@@ -253,7 +252,8 @@ export const notifyList = async (listId) => {
 
 export const endList = async (listId) => {
     try {
-        throw new Error();
+        await axios.delete(`/list/${listId}`);
+        await retrieveLists();
     } catch (e) {
         defaultHandler();
     }
