@@ -5,7 +5,7 @@ import { retrieveDrinksForListUser, retrieveDrinksForList } from './Axios';
 export const defaultState = {
     user: false,
     lists: [],
-    ended: [],
+    ended: false,
     users: [],
     drinks: {},
     userDrinks: [],

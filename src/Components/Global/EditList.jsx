@@ -10,7 +10,6 @@ import { useState } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import { faBeerMugEmpty } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { retrieveDrinksForListUser } from './../../Config/Axios';
 import { closeModal } from './../../Config/UIStore';
 
 
@@ -51,7 +50,7 @@ const EditUser = ({ user, listId }) => {
         openModal(<RemoveDrinkModal drink={drink} />, "Verwijderen")
     }
 
-    const openCreateModal = () => {
+    const openCreateModal = () => { 
         openModal(<CreateDrinkModal user={user} listId={listId} />, "Aanmaken")
     }
 

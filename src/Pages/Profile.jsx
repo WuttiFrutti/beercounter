@@ -1,11 +1,25 @@
 
-import { Typography, Container, Card, Button, Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Typography, Container, Card, Button, Box, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListSubheader } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
+import { useState, useEffect } from "react";
+import { MainStore } from '../Config/MainStore';
+import { retrieveEndedLists } from '../Config/Axios';
+import { ListItemText } from '@mui/material';
+import { Divider } from '@mui/material';
 
 const Profile = () => {
     const history = useHistory();
+    const endedLists = MainStore.useState(s => s.ended);
+
+    useEffect(() => {
+        if (endedLists === false) {
+            retrieveEndedLists();
+        }
+    });
+
+    console.log(endedLists);
+
 
     const back = () => {
         history.push("/home")
@@ -40,6 +54,7 @@ const Profile = () => {
                         <AccordionDetails>
                             <Typography>
                                 {/* TODO: ADD ended settings */}
+                                {endedLists && endedLists.map(list => <EndedList list={list} />)}
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -63,6 +78,33 @@ const Profile = () => {
     </Box>
 }
 
+const EndedList = ({ list }) => {
+
+    return <>
+        <List subheader={
+            <ListSubheader component="div" id="nested-list-subheader">
+                {list.name}
+            </ListSubheader>
+        }>
+
+            {list.users.map(user => <>
+                <ListItem key={user._id}>
+                    <ListItemText
+                        primary={user.user.username}
+                        secondary={<>
+                            Drankjes: {user.total}<br />
+                            Prijs: €{((user.total * list.price) / 100).toFixed(2)}
+
+                        </>}
+                    />
+                </ListItem>
+            </>)}
+
+        </List>
+        <Divider />
+    </>
+
+}
 
 
 export default Profile;
