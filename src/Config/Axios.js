@@ -179,6 +179,18 @@ export const retrieveDrinksForListUser = async (listId, userId) => {
     }
 }
 
+export const retrieveEndedLists = async () => {
+    try {
+        const { data } = await axios.get(`/ended`);
+        console.log(data);
+        MainStore.update(s => {
+            s.ended = data;
+        });
+    } catch (e) {
+        defaultHandler();
+    }
+}
+
 export const retrieveDrinksForList = async (listId) => {
     try {
         const { data } = await axios.get(`list/${listId}/drinks`);

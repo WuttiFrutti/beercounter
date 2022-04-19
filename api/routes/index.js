@@ -47,20 +47,25 @@ routes.use(async (req, res, next) => {
 
 routes.get("/main", async (req, res) => {
   let inLists = await List.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
-  let endedLists = await EndedList.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
+  // let endedLists = await EndedList.find({ $or: [{ "users.user": res.locals.user._id }, { owner: res.locals.user._id }] });
   const drinks = await Drink.find({ user: res.locals.user._id });
 
   const map = list => (list.owner.toString() === res.locals.user._id.toString() ? { ...list.toJSON(), shareId: list.shareId } : list)
 
   inLists = inLists.map(map);
-  endedLists = endedLists.map(map);
 
-  const withUsers = [...(new Set([...endedLists, ...inLists].map(list => list.users.map(users => users.user.toString())).flat()))];
+  const withUsers = [...(new Set(inLists.map(list => list.users.map(users => users.user.toString())).flat()))];
 
   const users = await User.find({ _id: { $in: withUsers } });
 
-  res.json({ lists: inLists, ended: endedLists, users: users, userDrinks: drinks });
+  res.json({ lists: inLists, users: users, userDrinks: drinks });
 });
+
+routes.get("/ended", async (req, res) => {
+  let endedLists = await EndedList.find({ $or: [{ "users.user.id": res.locals.user._id }, { owner: res.locals.user._id }] }).populate("users.user");
+
+  res.send(endedLists);
+})
 
 
 routes.get("/list/:listId/user/:userId", async (req, res) => {
@@ -118,15 +123,17 @@ routes.post("/list", async (req, res) => {
 
 });
 
-routes.put("/list", async (req, res) => {
-  const list = await List.findOneAndRemove({ _id: req.body.id, owner: res.locals.user._id }).populate("users.user");
+routes.delete("/list/:id", async (req, res) => {
+  const list = await List.findOneAndRemove({ _id: req.params.id, owner: res.locals.user._id }).populate("users.user");
+
+  console.log(list);
 
   let returnList = null;
   if (list !== null) {
     returnList = await new EndedList(list.toJSON()).save();
   }
 
-  const devices = returnList.users.reduce((a, b) => b.user._id.toString() === res.locals.user._id.toString() ? a : [...a, ...b.user.getMessageTokens()], []);
+  const devices = returnList.users.map(u => u.getMessageTokens()).flat();
 
   messaging.sendToDevice(devices, {
     data: {
