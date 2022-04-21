@@ -7,4 +7,12 @@ admin.initializeApp({
 });
 
 
-module.exports = admin.messaging();
+module.exports.sendToDevice = (devices = () => [], data) => {
+  try {
+    const devicesE = devices();
+    if (devicesE.length <= 0) return;
+    admin.messaging().sendToDevice(devices, data);
+  } catch (e) {
+    console.log("Message couldn't be sent")
+  }
+};

@@ -153,7 +153,6 @@ export const removeDrink = async (listId, drink) => {
 }
 
 export const editDrink = async (oldDrink, amount, date) => {
-    console.log(oldDrink)
     try {
         const { data } = await axios.put("list/drink", { listId: oldDrink.list, id: oldDrink._id, amount: amount, date: date });
         await retrieveDrinksForListUser(oldDrink.list, oldDrink.user);
@@ -181,7 +180,6 @@ export const retrieveDrinksForListUser = async (listId, userId) => {
 export const retrieveEndedLists = async () => {
     try {
         const { data } = await axios.get(`/ended`);
-        console.log(data);
         MainStore.update(s => {
             s.ended = data;
         });

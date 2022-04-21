@@ -7,8 +7,6 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
 import { logout } from '../../Config/Axios';
-import { LightMode } from '@mui/icons-material';
-import { setDarkMode } from './../../Config/MainStore';
 import { useHistory } from 'react-router-dom';
 
 const Navbar = () => {
@@ -28,21 +26,11 @@ const Navbar = () => {
 
 
     return <Box sx={{ flexGrow: 1 }} >
-        <AppBar position="static" sx={{ position: "absolute", zIndex: "10", boxShadow:"#285a84 0px 0px 2px", }} color={!isDarkTheme ? "neutral" : "default"}>
+        <AppBar position="static" sx={{ position: "absolute", zIndex: "10", boxShadow: "#285a84 0px 0px 2px", }} color={!isDarkTheme ? "neutral" : "default"}>
             <Toolbar>
                 <img src={"/assets/logo-small.svg"} alt="text-logo" width="150px" height="100%" />
                 <Box component="div" sx={{ flexGrow: 1 }} />
                 <div>
-                    <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        color="primary"
-                        onClick={() => setDarkMode()}
-                    >
-                        <LightMode fontSize="inherit" />
-                    </IconButton>
                     <IconButton
                         size="large"
                         aria-label="account of current user"

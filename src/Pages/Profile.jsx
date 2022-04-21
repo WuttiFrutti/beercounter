@@ -1,12 +1,14 @@
 
-import { Typography, Container, Card, Button, Box, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListSubheader } from '@mui/material';
+import { Typography, Container, Card, Button, Box, Accordion, AccordionSummary, AccordionDetails, List, ListItem, ListSubheader, IconButton } from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { MainStore } from '../Config/MainStore';
 import { retrieveEndedLists } from '../Config/Axios';
 import { ListItemText } from '@mui/material';
-import { Divider } from '@mui/material';
+import { setDarkMode } from './../Config/MainStore';
+import { LightMode } from '@mui/icons-material';
+
 
 const Profile = () => {
     const history = useHistory();
@@ -17,8 +19,6 @@ const Profile = () => {
             retrieveEndedLists();
         }
     });
-
-    console.log(endedLists);
 
 
     const back = () => {
@@ -40,8 +40,16 @@ const Profile = () => {
                         </AccordionSummary>
                         <AccordionDetails>
                             <Typography>
-                                {/* TODO: ADD list settings */}
-                                Er is hier momenteel niks te zien!
+                                Thema: <IconButton
+                        size="large"
+                        aria-label="account of current user"
+                        aria-controls="menu-appbar"
+                        aria-haspopup="true"
+                        color="primary"
+                        onClick={() => setDarkMode()}
+                    >
+                        <LightMode fontSize="inherit" />
+                    </IconButton>
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -52,10 +60,16 @@ const Profile = () => {
                             <Typography>Lijsten</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            <Typography>
-                                {/* TODO: ADD ended settings */}
-                                {endedLists && endedLists.map(list => <EndedList list={list} />)}
-                            </Typography>
+                            {endedLists && endedLists.map(list => <Accordion>
+                                <AccordionSummary
+                                    expandIcon={<ExpandMoreIcon />}
+                                >
+                                    <Typography>{list.name}</Typography>
+                                </AccordionSummary>
+                                <AccordionDetails>
+                                    <EndedList list={list} />
+                                </AccordionDetails>
+                            </Accordion>)}
                         </AccordionDetails>
                     </Accordion>
                     <Accordion>
@@ -81,15 +95,11 @@ const Profile = () => {
 const EndedList = ({ list }) => {
 
     return <>
-        <List subheader={
-            <ListSubheader component="div" id="nested-list-subheader">
-                {list.name}
-            </ListSubheader>
-        }>
-
+        <List sx={{ padding: 0 }}>
             {list.users.map(user => <>
-                <ListItem key={user._id}>
+                <ListItem key={user._id} sx={{ padding: 0 }}>
                     <ListItemText
+                        sx={{ padding: 0 }}
                         primary={user.user.username}
                         secondary={<>
                             Drankjes: {user.total}<br />
@@ -101,7 +111,6 @@ const EndedList = ({ list }) => {
             </>)}
 
         </List>
-        <Divider />
     </>
 
 }
