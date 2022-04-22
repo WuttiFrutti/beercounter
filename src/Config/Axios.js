@@ -257,6 +257,17 @@ export const endList = async (listId) => {
     }
 }
 
+export const retrieveLatestTag = async (listId) => {
+    try {
+        const { data } = await axios.get("/git-info");
+        MainStore.update(s => {
+            s.version = data.tag_name;
+        })
+    } catch (e) {
+        defaultHandler();
+    }
+}
+
 export const removeList = async (listId) => {
     try {
         throw new Error();
