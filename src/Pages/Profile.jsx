@@ -9,21 +9,23 @@ import { ListItemText } from '@mui/material';
 import { setDarkMode } from './../Config/MainStore';
 import { LightMode } from '@mui/icons-material';
 import { Logo } from './../Components/Global/Logo';
-
+import ConfirmationModal from './../Components/Global/ConfirmationModal';
+import { openModal } from "../Config/UIStore";
+import { removeList } from './../Config/Axios';
 
 const Profile = () => {
     const history = useHistory();
     const endedLists = MainStore.useState(s => s.ended);
     const version = MainStore.useState(s => s.version);
 
-    useEffect(() => {
-        if (endedLists === false) {
-            retrieveEndedLists();
-        }
-        if (version === false) {
-            retrieveLatestTag()
-        }
-    });
+    // useEffect(() => {
+    //     if (endedLists === false) {
+    //         retrieveEndedLists();
+    //     }
+    //     if (version === false) {
+    //         retrieveLatestTag()
+    //     }
+    // });
 
 
 
@@ -107,6 +109,7 @@ const Profile = () => {
 }
 
 const EndedList = ({ list }) => {
+    const openRemove = () => openModal(<ConfirmationModal text="Weet je zeker dat je deze lijst wilt verwijderen? Dit verwijderd ook alle statistieken voor de deelnemers!" confirmAction={() => removeList(list._id)} />, "Bevestigen")
 
     return <>
         <List sx={{ padding: 0 }}>
@@ -121,8 +124,8 @@ const EndedList = ({ list }) => {
                     </>}
                 />
             </ListItem>)}
-
         </List>
+        <Button variant="contained" onClick={openRemove}>Verwijderen</Button>
     </>
 
 }

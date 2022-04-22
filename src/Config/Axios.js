@@ -179,10 +179,15 @@ export const retrieveDrinksForListUser = async (listId, userId) => {
 
 export const retrieveEndedLists = async () => {
     try {
+        MainStore.update(s => {
+            s.ended = [];
+        });
         const { data } = await axios.get(`/ended`);
         MainStore.update(s => {
             s.ended = data;
         });
+        return true;
+
     } catch (e) {
         defaultHandler();
     }
@@ -257,12 +262,16 @@ export const endList = async (listId) => {
     }
 }
 
-export const retrieveLatestTag = async (listId) => {
+export const retrieveLatestTag = async () => {
     try {
-        const { data } = await axios.get("/git-info");
         MainStore.update(s => {
-            s.version = data.tag_name;
+            s.version = "";
         })
+        const { data } = await axios.get("/tag");
+        MainStore.update(s => {
+            s.version = data.tag;
+        })
+        return true;
     } catch (e) {
         defaultHandler();
     }
@@ -270,7 +279,9 @@ export const retrieveLatestTag = async (listId) => {
 
 export const removeList = async (listId) => {
     try {
-        throw new Error();
+        await axios.delete(`/ended/list/${listId}`);
+        await retrieveLists();
+        await retrieveEndedLists();
     } catch (e) {
         defaultHandler();
     }

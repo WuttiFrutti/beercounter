@@ -236,6 +236,14 @@ routes.delete("/list/drink", async (req, res) => {
   res.status(200).send();
 });
 
+routes.delete("/ended/list/:id", async (req, res) => {
+  const list = await EndedList.findOneAndRemove({ _id: req.params.id, owner: res.locals.user._id });
+
+  await Drink.deleteMany({ _id: { $in: list.users.reduce((arr, u) => [...arr, ...u.drinks], []) } });
+
+  res.send();
+})
+
 routes.get("/git-info", async (req, res) => {
   const gitHubPath = 'WuttiFrutti/beercounter';
   https.get({
@@ -244,8 +252,6 @@ routes.get("/git-info", async (req, res) => {
     headers: { 'User-Agent': 'Mozilla/5.0' }
   }, (resp) => {
     let data = '';
-
-    // A chunk of data has been received.
     resp.on('data', (chunk) => {
       data += chunk;
     });
