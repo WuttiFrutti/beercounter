@@ -90,8 +90,6 @@ const ManageListItemGraph = ({ listId }) => {
 
     const openEnd = () => openModal(<ConfirmationModal text="Weet je zeker dat je deze lijst wilt beëindigen?" confirmAction={() => endList(listId)} />, "Bevestigen")
 
-    const openRemove = () => openModal(<ConfirmationModal text="Weet je zeker dat je deze lijst wilt verwijderen?" confirmAction={removeList} />, "Bevestigen")
-
     return <>
         <Graph data={drinks} ></Graph>
         <Stack
@@ -100,10 +98,7 @@ const ManageListItemGraph = ({ listId }) => {
             alignItems="center"
             direction="row"
         >
-            <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                <Button onClick={openEnd}>Beëindigen</Button>
-                <Button onClick={openRemove}>Verwijderen</Button>
-            </ButtonGroup>
+            <Button variant="contained" onClick={openEnd}>Beëindigen</Button>
         </Stack>
     </>
 }

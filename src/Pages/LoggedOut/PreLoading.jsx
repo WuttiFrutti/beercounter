@@ -19,14 +19,15 @@ const PreLoading = ({ swap, setLoaded, promise }) => {
   useEffect(() => {
     if (swap) {
       checkLogin().then((res) => {
-        const p = promise();
-        p.then((args) => {
-          setLoaded(true)
-          if (!res) swap("login", "swap-right");
-        })
+        // console.log(promise())
+        // const p = promise();
+        // p.then((args) => {
+        setLoaded(true)
+        if (!res) swap("login", "swap-right");
+        // })
       });
     }
-  }, [swap, promise, setLoaded])
+  }, [setLoaded])
 
 
   return <div><Loading><CircularProgress /></Loading></div>

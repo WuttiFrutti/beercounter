@@ -13,12 +13,26 @@ import styled from "styled-components";
 import { useTheme } from '@mui/system';
 import { matchPath } from "react-router-dom/cjs/react-router-dom.min";
 import { openSnack } from "./UIStore";
+import { retrieveEndedLists, retrieveLatestTag, timeout } from './Axios';
+
+
 
 const promises = {
   NotFound: () => import('./../Pages/404'),
   SingleList: () => import('./../Pages/SingleList'),
   MainPages: () => import('./../Components/Global/MainPages.jsx'),
-  Profile: () => import('./../Pages/Profile.jsx'),
+  Profile: () => (async () => {
+    if (MainStore.currentState.version === false) {
+      try {
+        await retrieveLatestTag()
+      } catch (e) { }
+    }
+    if (MainStore.currentState.ended === false) {
+      await retrieveEndedLists()
+
+    }
+    return await import('./../Pages/Profile.jsx')
+  })(),
 }
 
 
@@ -51,44 +65,44 @@ const BackgroundTransition = styled(TransitionGroup)(({ style, sx, darkMode }) =
 const paths = [
   {
     path: "/lijst/:list",
-    component: () => <SingleList />,
-    promise: () => promises.SingleList
+    component: () => <SingleList />
   },
   {
     path: "/join/:shareId",
-    component: () => { },
-    promise: ({ params }, history) => {
-      return joinList(params.shareId).then(() => {
-        history.push("/home");
+    component: (args) => {
+      const { match, history } = args;
+      joinList(match.params.shareId).then(() => {
         openSnack(<>Je doet nu mee aan de lijst!</>, "info");
-        return Promise.resolve();
-      }).catch((e) => {
-
         history.push("/home");
-        return Promise.reject()
+        Promise.resolve();
+      }).catch((e) => {
+        history.push("/home");
+        Promise.reject()
       });
-    }
+
+      return <></>;
+    },
   },
   {
     path: "/profiel",
-    component: () => <Profile />,
-    promise: () => promises.Profile
+    component: () => <Profile />
   },
   {
     path: "/home",
     noAnimation: true,
-    component: (args) => <MainPages {...args} />,
-    promise: () => promises.MainPages,
+    component: (args) => <MainPages {...args} />
   },
   {
     path: "/",
-    component: () => <></>,
-    promise: (_, history) => history.replace("/home"),
+    component: (args) => {
+      args.history.replace("/home")
+
+      return <></>
+    },
   },
   {
     path: "*",
-    component: () => <NotFound />,
-    promise: () => promises.NotFound
+    component: () => <NotFound />
   }
 ]
 
@@ -108,12 +122,12 @@ const Router = () => {
     <Wait>
       {
         <Switch location={location}>
-          <Route path={options.path} exact={options.exact}>{<options.component match={match} options={options} />}</Route>
+          <Route path={options.path} exact={options.exact}>{<options.component match={match} options={options} history={history} />}</Route>
         </Switch>
       }
     </Wait>
   ) : (
-    <LoginSwitch setLoaded={setLoaded} promise={options.promise(match, history)} />
+    <LoginSwitch setLoaded={setLoaded} promise={options.component} />
   );
 
   const animation = location.state?.animation === undefined ? "swap-right" : location.state.animation || "";
