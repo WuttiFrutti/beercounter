@@ -80,7 +80,7 @@ const paths = [
         Promise.reject()
       });
 
-      return <MainPages  {...args}/>;
+      return <></>;
     },
   },
   {
@@ -97,7 +97,7 @@ const paths = [
     component: (args) => {
       args.history.replace("/home")
 
-      return <MainPages {...args} />
+      return <></>
     },
   },
   {
@@ -127,7 +127,7 @@ const Router = () => {
       }
     </Wait>
   ) : (
-    <LoginSwitch setLoaded={setLoaded} promise={options.component}/>
+    <LoginSwitch setLoaded={setLoaded} promise={options.component} />
   );
 
   const animation = location.state?.animation === undefined ? "swap-right" : location.state.animation || "";

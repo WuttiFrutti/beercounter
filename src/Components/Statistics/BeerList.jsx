@@ -22,7 +22,7 @@ const BeerList = ({ list }) => {
     const [userInList] = users.splice(users.findIndex(u => u.user === user._id), 1);
 
     return <>
-        <Typography variant="subtitle2">
+        <Typography variant="subtitle2" sx={{ marginBottom: "1em" }}>
             Totaal: {list.total} <br />
             Prijs: €{((list.total * list.price) / 100).toFixed(2)}
         </Typography>
