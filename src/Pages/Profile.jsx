@@ -4,21 +4,27 @@ import { useHistory } from 'react-router-dom';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useEffect } from "react";
 import { MainStore } from '../Config/MainStore';
-import { retrieveEndedLists } from '../Config/Axios';
+import { retrieveEndedLists, retrieveLatestTag } from '../Config/Axios';
 import { ListItemText } from '@mui/material';
 import { setDarkMode } from './../Config/MainStore';
 import { LightMode } from '@mui/icons-material';
+import { Logo } from './../Components/Global/Logo';
 
 
 const Profile = () => {
     const history = useHistory();
     const endedLists = MainStore.useState(s => s.ended);
+    const version = MainStore.useState(s => s.version);
 
     useEffect(() => {
         if (endedLists === false) {
             retrieveEndedLists();
         }
+        if (version === false) {
+            retrieveLatestTag()
+        }
     });
+
 
 
     const back = () => {
@@ -29,6 +35,14 @@ const Profile = () => {
         <Container maxWidth="sm">
             <Card sx={{ width: "100%", display: "flex" }}>
                 <Box sx={{ p: 4, width: "100%", }}>
+                    <Box>
+                        <Logo width="100%" height="100%" src="/assets/logo.svg" alt="Chef Bier" />
+                        <Typography sx={{
+                            position: "relative",
+                            bottom: "2em",
+                            left: "55%",
+                        }}>{version}</Typography>
+                    </Box>
                     <Typography variant="h6" component="h2">
                         Profiel
                     </Typography>
@@ -41,15 +55,15 @@ const Profile = () => {
                         <AccordionDetails>
                             <Typography>
                                 Thema: <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        color="primary"
-                        onClick={() => setDarkMode()}
-                    >
-                        <LightMode fontSize="inherit" />
-                    </IconButton>
+                                    size="large"
+                                    aria-label="account of current user"
+                                    aria-controls="menu-appbar"
+                                    aria-haspopup="true"
+                                    color="primary"
+                                    onClick={() => setDarkMode()}
+                                >
+                                    <LightMode fontSize="inherit" />
+                                </IconButton>
                             </Typography>
                         </AccordionDetails>
                     </Accordion>
@@ -60,7 +74,7 @@ const Profile = () => {
                             <Typography>Lijsten</Typography>
                         </AccordionSummary>
                         <AccordionDetails>
-                            {endedLists && endedLists.map(list => <Accordion>
+                            {endedLists && endedLists.map(list => <Accordion key={list._id}>
                                 <AccordionSummary
                                     expandIcon={<ExpandMoreIcon />}
                                 >
@@ -96,19 +110,17 @@ const EndedList = ({ list }) => {
 
     return <>
         <List sx={{ padding: 0 }}>
-            {list.users.map(user => <>
-                <ListItem key={user._id} sx={{ padding: 0 }}>
-                    <ListItemText
-                        sx={{ padding: 0 }}
-                        primary={user.user.username}
-                        secondary={<>
-                            Drankjes: {user.total}<br />
-                            Prijs: €{((user.total * list.price) / 100).toFixed(2)}
+            {list.users.map(user => <ListItem key={user._id} sx={{ padding: 0 }}>
+                <ListItemText
+                    sx={{ padding: 0 }}
+                    primary={user.user.username}
+                    secondary={<>
+                        Drankjes: {user.total}<br />
+                        Prijs: €{((user.total * list.price) / 100).toFixed(2)}
 
-                        </>}
-                    />
-                </ListItem>
-            </>)}
+                    </>}
+                />
+            </ListItem>)}
 
         </List>
     </>

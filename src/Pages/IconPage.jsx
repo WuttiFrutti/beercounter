@@ -1,17 +1,10 @@
 
 import { Container } from "@mui/material";
-import styled from "styled-components";
 import { Box } from '@mui/system';
+import { Logo } from './../Components/Global/Logo';
 
 
-const Logo = styled.img({
-    maxWidth: "80vw",
-    maxHeight: "200px",
-    objectFit: "contain",
-    margin: "auto",
-    marginTop: "2em",
-    marginBottom: "2em"
-})
+
 
 
 

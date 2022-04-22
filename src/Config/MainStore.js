@@ -9,8 +9,10 @@ export const defaultState = {
     users: [],
     drinks: {},
     userDrinks: [],
-    darkmode: getCookie("darkmode") === 'true'
+    darkmode: getCookie("darkmode") === 'true',
+    version: false
 }
+
 
 
 

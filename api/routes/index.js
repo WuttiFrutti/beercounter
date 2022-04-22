@@ -9,7 +9,7 @@ const Drink = require("../database/models/Drink")
 const { sendJoinRequest } = require('../messaging/mail');
 const { EndedList } = List;
 const messaging = require("../messaging/messaging");
-
+const https = require("https");
 
 
 
@@ -236,6 +236,27 @@ routes.delete("/list/drink", async (req, res) => {
   res.status(200).send();
 });
 
+routes.get("/git-info", async (req, res) => {
+  const gitHubPath = 'WuttiFrutti/beercounter';
+  https.get({
+    hostname: 'api.github.com',
+    path: '/repos/' + gitHubPath + '/releases/latest',
+    headers: { 'User-Agent': 'Mozilla/5.0' }
+  }, (resp) => {
+    let data = '';
+
+    // A chunk of data has been received.
+    resp.on('data', (chunk) => {
+      data += chunk;
+    });
+
+    resp.on('end', () => {
+      res.send(JSON.parse(data))
+    });
+  }).on("error", (e) => {
+    console.log(e);
+  })
+})
 
 
 
