@@ -134,7 +134,7 @@ const Router = () => {
   if (location.state) location.state.animation = "swap-right";
 
   return <>
-    <BackgroundTransition className={"transition-div"} childFactory={childFactoryCreator(animation)}>
+    <BackgroundTransition darkMode={isDarkTheme} className={"transition-div"} childFactory={childFactoryCreator(animation)}>
       {<CSSTransition
         className={"transition-div-child"}
         timeout={250}
