@@ -264,16 +264,22 @@ export const endList = async (listId) => {
 
 export const retrieveLatestTag = async () => {
     try {
+        // MainStore.update(s => {
+        //     s.version = "";
+        // })
+        // const { data } = await axios.get("/tag");
+        // MainStore.update(s => {
+        //     s.version = data.tag;
+        // })
         MainStore.update(s => {
-            s.version = "";
-        })
-        const { data } = await axios.get("/tag");
-        MainStore.update(s => {
-            s.version = data.tag;
+            s.version = "v0.1-alpha-web";
         })
         return true;
     } catch (e) {
-        defaultHandler();
+        // defaultHandler();
+        // MainStore.update(s => {
+        //     s.version = "v0.1-alpha-web";
+        // })
     }
 }
 
