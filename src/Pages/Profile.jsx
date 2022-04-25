@@ -12,20 +12,19 @@ import { Logo } from './../Components/Global/Logo';
 import ConfirmationModal from './../Components/Global/ConfirmationModal';
 import { openModal } from "../Config/UIStore";
 import { removeList } from './../Config/Axios';
+import styled from 'styled-components';
+
+const Emblem = styled.img`
+    right: 12%;
+    max-width: 100px;
+    position: absolute;
+    bottom: 4%;
+`
 
 const Profile = () => {
     const history = useHistory();
     const endedLists = MainStore.useState(s => s.ended);
     const version = MainStore.useState(s => s.version);
-
-    // useEffect(() => {
-    //     if (endedLists === false) {
-    //         retrieveEndedLists();
-    //     }
-    //     if (version === false) {
-    //         retrieveLatestTag()
-    //     }
-    // });
 
 
 
@@ -37,13 +36,22 @@ const Profile = () => {
         <Container maxWidth="sm">
             <Card sx={{ width: "100%", display: "flex" }}>
                 <Box sx={{ p: 4, width: "100%", }}>
-                    <Box>
+                    <Box sx={{ position: "relative" }}>
                         <Logo width="100%" height="100%" src="/assets/logo.svg" alt="Chef Bier" />
-                        <Typography sx={{
+                        <Box sx={{
                             position: "relative",
                             bottom: "2em",
-                            left: "55%",
-                        }}>{version}</Typography>
+                            display: "flex",
+                            justifyContent: "center",
+                        }}>
+                            <Typography sx={{
+                                left: "-10%",
+                                marginLeft: "-40%",
+                            }}>
+                                Powered By:<br />
+                                {version}</Typography>
+                            <Emblem src="/assets/stam_emblem.svg" alt="Stam Emblem" />
+                        </Box>  
                     </Box>
                     <Typography variant="h6" component="h2">
                         Profiel
