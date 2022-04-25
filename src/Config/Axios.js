@@ -143,6 +143,7 @@ export const addDrink = async (listId, amount, user = false, date = Date.now()) 
 }
 
 export const removeDrink = async (listId, drink) => {
+    console.log(drink);
     try {
         await axios.delete("list/drink", { data: { id: drink._id } });
         await retrieveDrinksForListUser(listId, drink.user);

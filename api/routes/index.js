@@ -122,30 +122,7 @@ routes.post("/list", async (req, res) => {
 
 });
 
-routes.delete("/list/:id", async (req, res) => {
-  const list = await List.findOneAndRemove({ _id: req.params.id, owner: res.locals.user._id }).populate("users.user");
 
-  let returnList = null;
-  if (list !== null) {
-    returnList = await new EndedList(list.toJSON()).save();
-  }
-
-  const devices = () => returnList.users.map(u => u.user.getMessageTokens()).flat();
-
-  messaging.sendToDevice(devices, {
-    data: {
-      title: `${res.locals.user.username}. heeft een lijst beëindigd!`,
-      body: `${res.locals.user.username} heeft lijst ${returnList.name} beëidigd!`,
-      data: JSON.stringify({ url: `${process.env.FRONTEND_URL}` }),
-      actions: JSON.stringify([
-        { action: 'join', title: 'Bekijken' },
-        { action: 'close', title: 'Sluiten' },
-      ]),
-    }
-  });
-
-  res.status(returnList ? 200 : 404).json(returnList);
-});
 
 routes.post("/list/user", async (req, res) => {
   const list = await List.findOneAndUpdate({ shareId: req.body.shareId, 'users.user': { $ne: res.locals.user._id } }, { $push: { users: { drinks: [], user: res.locals.user._id } } });
@@ -217,10 +194,13 @@ routes.put("/list/drink", async (req, res) => {
 });
 
 routes.delete("/list/drink", async (req, res) => {
-  const drink = await Drink.findOne({ _id: req.body.id, $or: [{ user: res.locals.user._id }, { owner: res.locals.user._id }] }).populate("user");
+  const drink = await Drink.findOne({ _id: req.body.id }).populate("user");
   const list = await List.findOne({ _id: drink.list });
 
-  const user = list.users.find(u => u.user.toString() === drink.user._id.toString());
+
+
+  const user = list.owner === res.locals.user._id ? res.locals.user : list.users.find(u => u.user.toString() === drink.user._id.toString());
+  if (user === undefined) return res.status(401).send();
   const index = user.drinks.findIndex(d => d._id.toString() === req.body.drinkId);
   user.drinks.splice(index, 1);
 
@@ -264,6 +244,30 @@ routes.get("/git-info", async (req, res) => {
   })
 })
 
+routes.delete("/list/:id", async (req, res) => {
+  const list = await List.findOneAndRemove({ _id: req.params.id, owner: res.locals.user._id }).populate("users.user");
+
+  let returnList = null;
+  if (list !== null) {
+    returnList = await new EndedList(list.toJSON()).save();
+  }
+
+  const devices = () => returnList.users.map(u => u.user.getMessageTokens()).flat();
+
+  messaging.sendToDevice(devices, {
+    data: {
+      title: `${res.locals.user.username}. heeft een lijst beëindigd!`,
+      body: `${res.locals.user.username} heeft lijst ${returnList.name} beëidigd!`,
+      data: JSON.stringify({ url: `${process.env.FRONTEND_URL}` }),
+      actions: JSON.stringify([
+        { action: 'join', title: 'Bekijken' },
+        { action: 'close', title: 'Sluiten' },
+      ]),
+    }
+  });
+
+  res.status(returnList ? 200 : 404).json(returnList);
+});
 
 
 
