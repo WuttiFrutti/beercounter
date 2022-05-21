@@ -57,7 +57,7 @@ const AddDrink = ({ listId, listname }) => {
         angle: 90,
         spread: 360,
         startVelocity: 40,
-        elementCount: 70,
+        elementCount: 700,
         dragFriction: 0.10,
         duration: 3000,
         stagger: 3,
