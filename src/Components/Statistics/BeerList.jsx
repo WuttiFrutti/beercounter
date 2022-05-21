@@ -1,7 +1,6 @@
 
-import { Typography, List, Divider, Collapse, ListItemButton, Accordion, AccordionSummary, AccordionDetails, ListItemText, ListItemAvatar, Avatar } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material';
-import { useState } from 'react';
+import { Typography, Accordion, AccordionSummary, AccordionDetails, ListItemText, ListItemAvatar, Avatar } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 import Graph from './Graph';
 import { getDrinks, MainStore } from './../../Config/MainStore';
 import { Box } from '@mui/system';
@@ -27,7 +26,7 @@ const BeerList = ({ list }) => {
             Prijs: €{((list.total * list.price) / 100).toFixed(2)}
         </Typography>
         {
-            users.map((user, index) => <BeerListItem price={list.price} listId={list._id} key={user._id} highest={highestNumber} user={fillListUser(user, userData)} index={index} />)
+            [...users,...users,...users,...users,...users,...users,...users,...users].map((user, index) => <BeerListItem price={list.price} listId={list._id} key={user._id} highest={highestNumber} user={fillListUser(user, userData)} index={index} />)
         }
         <BeerListItem price={list.price} listId={list._id} highest={highestNumber} user={fillListUser(userInList, userData)} index={users.length} />
         <Box>

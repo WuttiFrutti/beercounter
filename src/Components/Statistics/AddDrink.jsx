@@ -58,7 +58,7 @@ const AddDrink = ({ listId, listname }) => {
         spread: 360,
         startVelocity: 40,
         elementCount: 70,
-        dragFriction: 0.12,
+        dragFriction: 0.10,
         duration: 3000,
         stagger: 3,
         width: "10px",
@@ -82,7 +82,7 @@ const AddDrink = ({ listId, listname }) => {
                 </Select>
             </FormControl>
             <Box sx={{ display: "flex", marginLeft: "1em" }}>
-                <Box sx={{ position: "absolute" }}><Confetti active={success} config={config} /></Box>
+                <Confetti active={success} config={config} />
                 <IconButton onClick={submit} disabled={sending} sx={{ margin: "auto" }}>
                     <AddIcon size="large" fontSize="large" color="primary" />
                 </IconButton>
