@@ -10,10 +10,12 @@ import { addDrink, removeDrink } from './../../Config/Axios';
 import { Button } from '@mui/material';
 import { Close } from '@mui/icons-material';
 import { closeSnack, openSnack } from './../../Config/UIStore';
+import Confetti from 'react-dom-confetti';
 
 const AddDrink = ({ listId, listname }) => {
     const [amount, setAmount] = React.useState(1);
     const [sending, setSending] = React.useState(false);
+    const [success, setSuccess] = React.useState(false)
 
     const numberSelect = (max = 10) => {
         const arr = [];
@@ -39,15 +41,31 @@ const AddDrink = ({ listId, listname }) => {
         e.preventDefault()
         setSending(true);
         addDrink(listId, amount).then((data) => {
-            openSnack(null, null, { 
-                autohide:5000, isAlert:false, args:{ message:`${amount} drankjes toegevoegd aan ${listname}.`, action:<Action close={closeSnack} undo={() => undo(data)} /> }
+            setSuccess(true);
+            openSnack(null, null, {
+                autohide: 5000, isAlert: false, args: { message: `${amount} drankjes toegevoegd aan ${listname}.`, action: <Action close={closeSnack} undo={() => undo(data)} /> }
             });
             setSending(false);
+            setSuccess(false)
         }).catch(() => {
             setSending(false);
         });
-        
+
     }
+
+    const config = {
+        angle: 90,
+        spread: 360,
+        startVelocity: 40,
+        elementCount: 70,
+        dragFriction: 0.12,
+        duration: 3000,
+        stagger: 3,
+        width: "10px",
+        height: "10px",
+        perspective: "500px",
+        colors: ["#a864fd", "#29cdff", "#78ff44", "#ff718d", "#fdff6a"]
+    };
 
 
     return (
@@ -63,9 +81,10 @@ const AddDrink = ({ listId, listname }) => {
                     {numberSelect()}
                 </Select>
             </FormControl>
-            <Box sx={{display:"flex", marginLeft:"1em"}}>
-                <IconButton onClick={submit} disabled={sending} sx={{margin:"auto"}}>
-                    <AddIcon size="large" fontSize="large" color="primary"  />
+            <Box sx={{ display: "flex", marginLeft: "1em" }}>
+                <Box sx={{ position: "absolute" }}><Confetti active={success} config={config} /></Box>
+                <IconButton onClick={submit} disabled={sending} sx={{ margin: "auto" }}>
+                    <AddIcon size="large" fontSize="large" color="primary" />
                 </IconButton>
             </Box>
         </Box>
@@ -73,20 +92,20 @@ const AddDrink = ({ listId, listname }) => {
 }
 
 
-const Action = ({close, undo}) => (
+const Action = ({ close, undo }) => (
     <React.Fragment>
-      <Button color="secondary" size="small" onClick={undo}>
-        Ongedaan maken
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={close}
-      >
-        <Close fontSize="small" />
-      </IconButton>
+        <Button color="secondary" size="small" onClick={undo}>
+            Ongedaan maken
+        </Button>
+        <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={close}
+        >
+            <Close fontSize="small" />
+        </IconButton>
     </React.Fragment>
-  );
+);
 
 export default AddDrink
