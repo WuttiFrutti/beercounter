@@ -9,7 +9,7 @@ const UserList = ({ list, favorite, setFavorite }) => {
 
 
 
-    return <Card sx={{ marginBottom: "2em" }} key={list._id}><CardContent>
+    return <Card sx={{ marginBottom: "2em", overflow:"visible" }} key={list._id}><CardContent>
     <Stack direction="row">
         <Typography color="primary" gutterBottom variant="h5" component="div">
             {list.name}
