@@ -26,7 +26,7 @@ const BeerList = ({ list }) => {
             Prijs: €{((list.total * list.price) / 100).toFixed(2)}
         </Typography>
         {
-            [...users,...users,...users,...users,...users,...users,...users,...users].map((user, index) => <BeerListItem price={list.price} listId={list._id} key={user._id} highest={highestNumber} user={fillListUser(user, userData)} index={index} />)
+           users.map((user, index) => <BeerListItem price={list.price} listId={list._id} key={user._id} highest={highestNumber} user={fillListUser(user, userData)} index={index} />)
         }
         <BeerListItem price={list.price} listId={list._id} highest={highestNumber} user={fillListUser(userInList, userData)} index={users.length} />
         <Box>
