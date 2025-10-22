@@ -12,7 +12,6 @@ const messaging = require("../messaging/messaging");
 const https = require("https");
 
 
-
 const expirationCheck = async (req, user) => {
   const token = user.getTokens().find(t => t.token === req.cookies.token);
 

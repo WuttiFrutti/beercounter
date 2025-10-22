@@ -5,12 +5,13 @@ import { setCookie, getCookie } from 'react-use-cookie';
 import { notificationPermissions } from "./Firebase";
 import { openSnack } from "./UIStore";
 
-const axios = _axios.create({ baseURL: process.env.REACT_APP_BASE_URL, withCredentials: true })
+const axios = _axios.create({ baseURL: process.env.REACT_APP_BASE_URL, withCredentials: true });
+
 
 const defaultHandler = (message = "Er is iets mis gegaan!") => {
     openSnack(<>{message}</>);
     throw Error(message);
-}
+};
 
 
 
@@ -30,15 +31,15 @@ export const login = async ({ email, password, expire }) => {
         await registerMessagingToken(await notificationPermissions());
         await retrieveLists();
         MainStore.update(s => {
-            s.darkmode = getCookie("darkmode") === 'true'
-            s.user = data
+            s.darkmode = getCookie("darkmode") === 'true';
+            s.user = data;
         });
     } catch (e) {
         if (e?.response?.data) throw new AxiosError(e.response.data);
         defaultHandler();
     }
 
-}
+};
 
 export const register = async ({ username, email, password, passwordrepeat }) => {
     const errors = {};
@@ -48,7 +49,7 @@ export const register = async ({ username, email, password, passwordrepeat }) =>
     if (!passwordrepeat) errors.passwordrepeat = "* Verplicht";
 
     if (password && passwordrepeat && (passwordrepeat !== password)) {
-        const str = "Wachtwoorden moeten overeen komen"
+        const str = "Wachtwoorden moeten overeen komen";
         errors.password = str;
         errors.passwordrepeat = str;
     }
@@ -65,7 +66,51 @@ export const register = async ({ username, email, password, passwordrepeat }) =>
         if (e?.response?.data) throw new AxiosError(e.response.data);
         defaultHandler();
     }
-}
+};
+
+export const reset = async ({ token, password, passwordrepeat }) => {
+    const errors = {};
+    if (!token) errors.token = "* Verplicht";
+    if (!password) errors.password = "* Verplicht";
+    if (!passwordrepeat) errors.passwordrepeat = "* Verplicht";
+
+
+    if (password && passwordrepeat && (passwordrepeat !== password)) {
+        const str = "Wachtwoorden moeten overeen komen";
+        errors.password = str;
+        errors.passwordrepeat = str;
+    }
+
+    if (Object.keys(errors).length > 0) {
+        throw new AxiosError(errors);
+    }
+
+    try {
+        await axios.post("password-reset/finish", { password, token });
+        return;
+    } catch (e) {
+        if (e?.response?.data) throw new AxiosError(e.response.data);
+        defaultHandler();
+    }
+};
+
+export const forgot = async ({ email }) => {
+    const errors = {};
+    if (!email) errors.email = "* Verplicht";
+
+
+    if (Object.keys(errors).length > 0) {
+        throw new AxiosError(errors);
+    }
+
+    try {
+        await axios.post("password-reset", { email });
+        return;
+    } catch (e) {
+        if (e?.response?.data) throw new AxiosError(e.response.data);
+        defaultHandler();
+    }
+};
 
 export const checkLogin = async () => {
     // await timeout(0)
@@ -85,7 +130,7 @@ export const checkLogin = async () => {
         setCookie("token", "");
         return false;
     }
-}
+};
 
 export const registerToken = async (token) => {
     try {
@@ -93,7 +138,7 @@ export const registerToken = async (token) => {
     } catch (e) {
         defaultHandler("Kan notificaties niet tonen!");
     }
-}
+};
 
 export const logout = async (history) => {
 
@@ -104,7 +149,7 @@ export const logout = async (history) => {
     });
     if (history) history.push("/", { animation: false });
 
-}
+};
 
 export const retrieveLists = async () => {
     try {
@@ -118,7 +163,7 @@ export const retrieveLists = async () => {
         console.log(e);
         defaultHandler(e?.response?.data?.message);
     }
-}
+};
 
 export const joinList = async (shareId) => {
     try {
@@ -127,7 +172,7 @@ export const joinList = async (shareId) => {
     } catch (e) {
         defaultHandler("Deze lijst bestaat niet!");
     }
-}
+};
 
 
 
@@ -140,7 +185,7 @@ export const addDrink = async (listId, amount, user = false, date = Date.now()) 
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const removeDrink = async (listId, drink) => {
     console.log(drink);
@@ -151,7 +196,7 @@ export const removeDrink = async (listId, drink) => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const editDrink = async (oldDrink, amount, date) => {
     try {
@@ -160,9 +205,9 @@ export const editDrink = async (oldDrink, amount, date) => {
         await retrieveLists();
         return data;
     } catch (e) {
-        defaultHandler()
+        defaultHandler();
     }
-}
+};
 
 export const retrieveDrinksForListUser = async (listId, userId) => {
     try {
@@ -176,7 +221,7 @@ export const retrieveDrinksForListUser = async (listId, userId) => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const retrieveEndedLists = async () => {
     try {
@@ -192,7 +237,7 @@ export const retrieveEndedLists = async () => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const retrieveDrinksForList = async (listId) => {
     try {
@@ -210,7 +255,7 @@ export const retrieveDrinksForList = async (listId) => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const registerMessagingToken = async (token) => {
     try {
@@ -218,7 +263,7 @@ export const registerMessagingToken = async (token) => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const createList = async (name, price, join, users) => {
     const errors = { users: [] };
@@ -238,13 +283,13 @@ export const createList = async (name, price, join, users) => {
         await retrieveLists();
     } catch (e) {
         if (e?.response?.status === 404) {
-            throw new AxiosError({ users: users.map(u => e.response.data.emails.includes(u) ? "Gebuiker bestaat niet" : undefined) })
+            throw new AxiosError({ users: users.map(u => e.response.data.emails.includes(u) ? "Gebuiker bestaat niet" : undefined) });
         }
         defaultHandler();
     }
 
 
-}
+};
 
 export const notifyList = async (listId) => {
     try {
@@ -252,7 +297,7 @@ export const notifyList = async (listId) => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const endList = async (listId) => {
     try {
@@ -261,7 +306,7 @@ export const endList = async (listId) => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 export const retrieveLatestTag = async () => {
     try {
@@ -274,7 +319,7 @@ export const retrieveLatestTag = async () => {
         // })
         MainStore.update(s => {
             s.version = "v0.1-alpha-web";
-        })
+        });
         return true;
     } catch (e) {
         // defaultHandler();
@@ -282,7 +327,7 @@ export const retrieveLatestTag = async () => {
         //     s.version = "v0.1-alpha-web";
         // })
     }
-}
+};
 
 export const removeList = async (listId) => {
     try {
@@ -292,7 +337,7 @@ export const removeList = async (listId) => {
     } catch (e) {
         defaultHandler();
     }
-}
+};
 
 const hasDuplicates = (array) => (new Set(array)).size !== array.length;
 

@@ -10,6 +10,7 @@ import Wait from './../Wait';
 
 const Login = React.lazy(() => import('./Login'));
 const Register = React.lazy(() => import('./Register'));
+const ForgotPassword = React.lazy(() => import('./ForgotPassword'));
 
 const LoginSwitch = ({ setLoaded, promise }) => {
   const [state, setState] = useState("loading");
@@ -24,7 +25,8 @@ const LoginSwitch = ({ setLoaded, promise }) => {
   const stateComponents = {
     loading: <PreLoading swap={swap} setLoaded={setLoaded}  promise={promise}/>,
     login: <Wait><Login swap={swap} /></Wait>,
-    register: <Wait><Register swap={swap} /></Wait>
+    register: <Wait><Register swap={swap} /></Wait>,
+    forgot: <Wait><ForgotPassword swap={swap} /></Wait>
   }
 
   return <IconPage><TransitionGroup className="child-transition-div" childFactory={childFactoryCreator(animation)}>

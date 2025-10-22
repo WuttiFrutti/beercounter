@@ -9,6 +9,7 @@ import { joinList } from './Axios';
 
 import Page from '../Pages/Page';
 import Wait from './../Pages/Wait';
+import ResetPassword from './../Pages/LoggedOut/ResetPassword';
 import styled from "styled-components";
 import { useTheme } from '@mui/system';
 import { matchPath } from "react-router-dom/cjs/react-router-dom.min";
@@ -62,7 +63,12 @@ const BackgroundTransition = styled(TransitionGroup)(({ style, sx, darkMode }) =
 });
 
 
+const reset = (args) => <ResetPassword token={args.match.params.token} />;
 const paths = [
+  {
+    path: "/reset-password/:token",
+    component: reset
+  },
   {
     path: "/lijst/:list",
     component: () => <SingleList />
@@ -118,7 +124,7 @@ const Router = () => {
   const match = matchPath(location.pathname, { path: options.path, exact: options.exact });
 
 
-  const route = loaded && user ? (
+  const route = (loaded && user) || options.component === reset ? (
     <Wait>
       {
         <Switch location={location}>

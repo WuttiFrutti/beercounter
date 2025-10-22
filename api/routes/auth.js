@@ -2,6 +2,8 @@ const routes = require('express').Router();
 const User = require("../database/models/User");
 const { v4: uuid } = require('uuid');
 const { Validator, mapper } = require('../validator');
+const { sendPasswordReset } = require("../messaging/mail");
+const jwt = require('jsonwebtoken');
 
 const year = 1000*60*60*24*365;
 
@@ -99,5 +101,48 @@ routes.post("/login", async (req, res) => {
 
 })
 
-module.exports = routes;
+routes.post('/password-reset', async (req, res) => {
+    const v = new Validator(req.body, {
+        email: 'required|email',
+    });
 
+    const matched = await v.check();
+
+    if (!matched) {
+        return res.status(400).json(mapper(v.errors));
+    }
+
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+        await sendPasswordReset(user, jwt.sign({ id: user._id }, process.env.JWT_SECRET || "temp"));
+    }
+
+    res.status(200).send({ message: 'Er is een reset link verstuurd indien de mail bekend is.' });
+});
+
+
+routes.post("/password-reset/finish", async (req, res) => {
+    const v = new Validator(req.body, {
+        password: 'required|minLength:5',
+        token: 'required',
+    });
+
+    const matched = await v.check();
+
+    if (!matched) {
+        return res.status(400).json(mapper(v.errors));
+    }
+
+    const decoded = jwt.verify(req.body.token, process.env.JWT_SECRET || "temp");
+    const user = await User.findById(decoded.id);
+
+    if (user) {
+        user.password = req.body.password;
+        await user.save();
+        return res.status(200).send({ message: 'Wachtwoord succesvol gereset.' });
+    }
+
+    res.status(400).send({ message: 'Ongeldige token.' });
+});
+
+module.exports = routes;

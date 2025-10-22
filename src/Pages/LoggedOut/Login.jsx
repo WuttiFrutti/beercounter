@@ -79,6 +79,7 @@ const Login = ({ swap }) => {
 
         <CardActions>
             <Button onClick={() => swap("register", "swap-left")} size="small">Nog geen account? Registreer hier!</Button>
+            <Button onClick={() => swap("forgot", "swap-right")} size="small">Wachtwoord vergeten?</Button>
         </CardActions>
     </Card>
 

@@ -7,7 +7,7 @@ const hbs = require('nodemailer-express-handlebars')({ viewEngine: exphbs.create
 const frontendUrl = process.env.FRONTEND_URL
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.yandex.com',
+    host: 'mail.wuttifrutti.nl',
     port: 465,
     auth: {
         user: process.env.MAIL_USER,
@@ -40,11 +40,20 @@ const sendMail = async (options) => {
 }
 
 const sendJoinRequest = async (userToJoin, userToRequest, list) => {
-    return sendMail({ 
+    return sendMail({
         title: `${userToRequest.username} heeft je uitgenodigd voor een lijst`,
         to: userToJoin.email,
         message: /*html*/`Je bent uitgenodigd om deel te nemen aan de lijst: <span style="font-weight: bold;color: #285a84;">${list.name}</span>. Klik <a href="${frontendUrl}/join/${list.shareId}">hier</a> om mee te doen aan de lijst.`
     })
 }
 
+const sendPasswordReset = async (user, token) => {
+    return sendMail({
+        title: "Wachtwoord reset",
+        to: user.email,
+        message: /*html*/`Klik <a href="${frontendUrl}/reset-password/${token}">hier</a> om je wachtwoord te resetten.`
+    });
+}
+
 module.exports.sendJoinRequest = sendJoinRequest;
+module.exports.sendPasswordReset = sendPasswordReset;
